@@ -72,11 +72,12 @@ export function ArticleScroller({
     // never fire. Measuring distance travelled works in both directions.
     const rtl = getComputedStyle(scroller).direction === "rtl";
 
-    // Guarantee the first card sits at the reader's starting edge. Browsers
-    // have disagreed historically about the initial scrollLeft of an RTL
-    // scroller, and iOS Safari in particular does not always land on it.
-    const firstCard = scroller.querySelector(".article-card");
-    firstCard?.scrollIntoView({ inline: "start", block: "nearest" });
+    // Guarantee the rail opens at the reader's starting edge — scrollLeft 0 is
+    // the start in both writing directions (it runs negative from there in
+    // RTL). Assigned directly rather than via scrollIntoView: that method also
+    // scrolls ancestors on the block axis, which dragged the whole page down to
+    // the rail on load.
+    scroller.scrollLeft = 0;
 
     let timer: ReturnType<typeof setInterval> | undefined;
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
