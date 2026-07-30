@@ -12,3 +12,139 @@ body {
   color: var(--color-bone);
   -webkit-font-smoothing: antialiased;
 }
+
+/* Layout ------------------------------------------------------------- */
+
+.page {
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Glow --------------------------------------------------------------- */
+
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: min(120vw, 900px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    rgb(196 181 253 / 0.16) 0%,
+    rgb(226 232 240 / 0.07) 32%,
+    transparent 68%
+  );
+  filter: blur(40px);
+  animation: breathe 14s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -52%) scale(1.08);
+  }
+}
+
+/* Typography --------------------------------------------------------- */
+
+.wordmark {
+  font-size: clamp(1.75rem, 7vw, 4.5rem);
+  font-weight: 300;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  /* letter-spacing adds trailing space after the last glyph, which shifts
+     the text left of true centre; the indent cancels it out */
+  text-indent: 0.3em;
+  white-space: nowrap;
+  color: var(--color-bone);
+}
+
+.rule {
+  width: min(180px, 40vw);
+  height: 1px;
+  border: 0;
+  margin: clamp(1.25rem, 4vw, 2rem) 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(245 245 240 / 0.35),
+    transparent
+  );
+}
+
+.subline {
+  font-size: 0.8125rem;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;
+  color: var(--color-muted);
+}
+
+.footer {
+  position: absolute;
+  bottom: 1.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: rgb(245 245 240 / 0.22);
+}
+
+/* Entrance ----------------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  animation: rise 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.reveal-1 {
+  animation-delay: 80ms;
+}
+.reveal-2 {
+  animation-delay: 220ms;
+}
+.reveal-3 {
+  animation-delay: 340ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion ----------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .glow {
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
