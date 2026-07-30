@@ -229,8 +229,11 @@ describe("coming-soon page", () => {
 
   it("renders no other text", () => {
     const { container } = render(<Home />);
-    const text = container.textContent?.replace(/\s+/g, " ").trim();
-    expect(text).toBe("Tai Atar coming soon © 2026 Tai Atar");
+    // textContent runs adjacent elements together with no separator, so the
+    // expectation is the three strings concatenated. Any stray copy added to
+    // the page breaks this.
+    const expected = ["Tai Atar", "coming soon", "© 2026 Tai Atar"].join("");
+    expect(container.textContent).toBe(expected);
   });
 });
 ```
