@@ -110,6 +110,8 @@ input the customer supplies before deployment — see Sequencing.
 2. Import the repository into Vercel. Framework preset is detected automatically; no build
    configuration is needed.
 3. Add the customer's domain in the Vercel project's Domains settings, both apex and `www`.
+   The apex is canonical; `www` is configured as a permanent redirect to it, so the site is
+   reachable at one address only.
 4. In GoDaddy's DNS manager, create the records Vercel displays: an `A` record for the apex
    and a `CNAME` for `www`. Use the values from Vercel's dashboard rather than any value
    written here — Vercel's published IPs have changed historically.
@@ -132,7 +134,8 @@ an incorrect Open Graph URL is worse than an absent one.
 
 ## Acceptance criteria
 
-- `npm run build` completes with no errors or warnings.
+- `npm run build` completes with no errors. Any warnings are investigated and either fixed
+  or explained — they are not ignored.
 - `npm run dev` serves the page at `localhost:3000`, rendering as specified.
 - Layout is correct at 320px, 768px, and 1440px viewport widths.
 - No errors or warnings in the browser console.
