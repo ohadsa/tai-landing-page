@@ -37,6 +37,18 @@ description: >
 a YAML syntax error reports the line. Both fail the build rather than shipping a broken
 page.
 
+## Changing the domain
+
+`site.url` is the canonical address, used for the Open Graph URL and to resolve social
+preview images. Write it with no trailing slash:
+
+```yaml
+site:
+  url: "https://taiatar.com"
+```
+
+If the domain ever changes, this is the only place to edit it.
+
 ## Adding images
 
 Image slots currently render as labelled placeholders showing the file path they expect.

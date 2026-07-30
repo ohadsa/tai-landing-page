@@ -3,6 +3,9 @@ site:
   logo_text: "Writer Name"
   language: "en"
   email: "hello@example.com"
+  # Canonical address, no trailing slash. Used for the Open Graph URL and to
+  # resolve relative image paths in social previews.
+  url: "https://taiatar.com"
 
 seo:
   title: "Writer Name — Writer and Workshop Facilitator"

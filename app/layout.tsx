@@ -26,6 +26,8 @@ export function generateMetadata(): Metadata {
   const { seo, site } = getContent();
 
   return {
+    metadataBase: new URL(site.url),
+    alternates: { canonical: "/" },
     title: seo.title,
     description: seo.description,
     openGraph: {
@@ -33,6 +35,7 @@ export function generateMetadata(): Metadata {
       description: seo.description,
       siteName: site.name,
       type: "website",
+      url: site.url,
       // Only advertise a social image once the file actually exists — a broken
       // og:image renders as a blank card wherever the link is shared.
       ...(imageExists(seo.social_image)

@@ -37,7 +37,13 @@ export type Workshop = {
 export type Testimonial = { quote: string; name: string; context: string };
 
 export type SiteContent = {
-  site: { name: string; logo_text: string; language: string; email: string };
+  site: {
+    name: string;
+    logo_text: string;
+    language: string;
+    email: string;
+    url: string;
+  };
   seo: { title: string; description: string; social_image: string };
   navigation: NavItem[];
   hero: {
