@@ -1,15 +1,30 @@
+import { getContent } from "@/lib/content";
+import { Nav } from "@/components/Nav";
+import { Hero } from "@/components/Hero";
+import { Writing } from "@/components/Writing";
+import { About } from "@/components/About";
+import { Workshops } from "@/components/Workshops";
+import { Testimonials } from "@/components/Testimonials";
+import { Newsletter } from "@/components/Newsletter";
+import { Contact } from "@/components/Contact";
+import { SiteFooter } from "@/components/SiteFooter";
+
 export default function Home() {
+  const content = getContent();
+
   return (
-    <main className="page">
-      <div aria-hidden="true" className="glow" />
-
-      <div className="stack">
-        <h1 className="wordmark reveal reveal-1">Tai Atar</h1>
-        <hr className="rule reveal reveal-2" />
-        <p className="subline reveal reveal-3">coming soon</p>
-      </div>
-
-      <footer className="footer">© 2026 Tai Atar</footer>
-    </main>
+    <>
+      <Nav logoText={content.site.logo_text} items={content.navigation} />
+      <main>
+        <Hero hero={content.hero} />
+        <Writing writing={content.writing} />
+        <About about={content.about} />
+        <Workshops workshops={content.workshops} />
+        <Testimonials testimonials={content.testimonials} />
+        <Newsletter newsletter={content.newsletter} />
+        <Contact contact={content.contact} />
+      </main>
+      <SiteFooter footer={content.footer} social={content.social} />
+    </>
   );
 }

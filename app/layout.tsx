@@ -1,29 +1,59 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Instrument_Serif, Inter } from "next/font/google";
+import { getContent } from "@/lib/content";
+import { imageExists } from "@/components/Figure";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin"], display: "swap" });
+const display = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-display",
+  display: "swap",
+});
 
-export const metadata: Metadata = {
-  title: "Tai Atar",
-  description: "Tai Atar — coming soon.",
-  openGraph: {
-    title: "Tai Atar",
-    description: "Tai Atar — coming soon.",
-    type: "website",
-  },
-};
+const sans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+/**
+ * Metadata comes from the `seo` block in content/site.yaml, so editing the YAML
+ * updates the browser tab and social previews along with the page body.
+ */
+export function generateMetadata(): Metadata {
+  const { seo, site } = getContent();
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    openGraph: {
+      title: seo.title,
+      description: seo.description,
+      siteName: site.name,
+      type: "website",
+      // Only advertise a social image once the file actually exists — a broken
+      // og:image renders as a blank card wherever the link is shared.
+      ...(imageExists(seo.social_image)
+        ? { images: [{ url: seo.social_image }] }
+        : {}),
+    },
+  };
+}
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0b",
+  themeColor: "#fbfaf8",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const { site } = getContent();
+
   return (
-    <html lang="en">
-      <body className={geist.className}>{children}</body>
+    <html lang={site.language} className={`${display.variable} ${sans.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

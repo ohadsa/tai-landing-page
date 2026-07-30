@@ -1,7 +1,13 @@
 # Tai Atar — Coming-Soon Page
 
 **Date:** 2026-07-30
-**Status:** Approved, ready for implementation planning
+**Status:** SUPERSEDED — the coming-soon page was replaced by the full content-driven site
+before it ever deployed. Kept for the record; do not build from it.
+
+Its deployment section is still accurate and is the reference for putting the current site
+on the GoDaddy domain. Everything about page content and visual design is obsolete: the site
+is now light rather than dark, multi-section rather than a single line, and driven by
+`content/site.yaml`. See `docs/editing-content.md`.
 
 ## Purpose
 

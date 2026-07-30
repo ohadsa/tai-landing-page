@@ -1,0 +1,144 @@
+site:
+  name: "Writer Name"
+  logo_text: "Writer Name"
+  language: "en"
+  email: "hello@example.com"
+
+seo:
+  title: "Writer Name — Writer and Workshop Facilitator"
+  description: "Essays, workshops, and conversations about identity, creativity, and personal stories."
+  social_image: "/images/social-preview.jpg"
+
+navigation:
+  - label: "Writing"
+    href: "#writing"
+  - label: "About"
+    href: "#about"
+  - label: "Workshops"
+    href: "#workshops"
+  - label: "Contact"
+    href: "#contact"
+
+hero:
+  eyebrow: "Writer · Facilitator"
+  title: "I write about the stories we carry."
+  description: >
+    Essays, workshops, and conversations about identity,
+    relationships, creativity, and the inner life.
+  primary_button:
+    label: "Explore my writing"
+    href: "#writing"
+  secondary_button:
+    label: "View workshops"
+    href: "#workshops"
+  portrait:
+    src: "/images/portraits/hero.jpg"
+    alt: "Portrait of Writer Name"
+
+writing:
+  title: "Selected writing"
+  introduction: "Essays, observations, and personal stories."
+  articles:
+    - title: "The Shape of Memory"
+      description: "An essay about the stories we preserve and the ones we rewrite."
+      publication: "Publication Name"
+      published_at: "2026-06-12"
+      category: "Personal Essay"
+      image:
+        src: "/images/articles/shape-of-memory.jpg"
+        alt: "Abstract shadow across a wall"
+      url: "https://example.com/article"
+
+    - title: "Learning to Stay"
+      description: "A reflection on intimacy, distance, and belonging."
+      publication: "Publication Name"
+      published_at: "2026-04-18"
+      category: "Relationships"
+      image:
+        src: "/images/articles/learning-to-stay.jpg"
+        alt: "Two chairs beside a window"
+      url: "https://example.com/article"
+
+about:
+  title: "About"
+  lead: "I write to understand the things we rarely say aloud."
+  paragraphs:
+    - >
+      First biography paragraph. This should describe the writer,
+      her perspective, and the subjects she explores.
+    - >
+      Second paragraph about professional experience, publications,
+      workshops, or creative background.
+  portrait:
+    src: "/images/portraits/about.jpg"
+    alt: "Writer Name sitting beside a window"
+  highlights:
+    - "Published in Publication One"
+    - "Facilitates intimate writing workshops"
+    - "Based in Tel Aviv"
+
+workshops:
+  title: "Upcoming workshops"
+  introduction: "Small-group workshops for people who want to write with honesty and depth."
+  items:
+    - title: "Writing from Memory"
+      slug: "writing-from-memory"
+      description: >
+        A four-session workshop exploring memory,
+        voice, and personal narrative.
+      start_date: "2026-09-12"
+      end_date: "2026-10-03"
+      time: "18:30–21:00"
+      location: "Tel Aviv"
+      format: "In person"
+      language: "Hebrew"
+      sessions: 4
+      capacity: 12
+      available_places: 5
+      price:
+        amount: 1200
+        currency: "ILS"
+      image:
+        src: "/images/workshops/writing-from-memory.jpg"
+        alt: "Notebook and pen on a wooden table"
+      registration_url: "https://example.com/register"
+
+testimonials:
+  title: "From previous participants"
+  items:
+    - quote: >
+        The workshop helped me find a voice that felt honest,
+        clear, and entirely my own.
+      name: "Participant Name"
+      context: "Writing from Memory, 2025"
+
+newsletter:
+  eyebrow: "Letters, occasionally"
+  title: "Stay close to the writing."
+  description: >
+    New essays, workshop announcements,
+    reading recommendations, and notes from the writing process.
+  provider: "mailchimp"
+  form_action: ""
+
+contact:
+  title: "Let’s talk"
+  description: >
+    For workshop questions, collaborations,
+    speaking invitations, or general messages.
+  email: "hello@example.com"
+  subjects:
+    - "Workshop question"
+    - "Collaboration"
+    - "Speaking invitation"
+    - "Press"
+    - "Other"
+
+social:
+  instagram: "https://instagram.com/example"
+  facebook: ""
+  linkedin: ""
+
+footer:
+  sentence: "Writing about the inner lives we rarely speak about."
+  copyright: "© 2026 Writer Name"

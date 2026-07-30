@@ -1,5 +1,11 @@
 # Tai Atar Coming-Soon Page Implementation Plan
 
+> **SUPERSEDED.** Tasks 1–4 were executed, then the coming-soon page was replaced by the
+> full content-driven site. Task 5 (deploy to Vercel, point the GoDaddy domain) was never
+> run and is still the correct procedure for the current site — the only change is that
+> `metadataBase` now belongs in `app/layout.tsx`'s `generateMetadata`, not a static export.
+> Everything in Tasks 2–4 describes a page that no longer exists.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ship a dark, minimal coming-soon page for Tai Atar, live over HTTPS on the customer's GoDaddy domain.
