@@ -576,10 +576,13 @@ blockquote,
   gap: 26px;
   width: max-content;
   padding-inline: var(--page);
-  direction: ltr;
+  /* Inherits the page's rtl deliberately. The reference template forced ltr
+     here, which laid the cards left-to-right inside a right-to-left scroller —
+     so the scroller's start edge (the right one) landed on the LAST article and
+     the first sat off-screen. Letting direction inherit puts the newest article
+     at the reader's starting edge. */
 }
 .article-card {
-  direction: rtl;
   flex: 0 0 clamp(315px, 31vw, 470px);
   display: flex;
 }

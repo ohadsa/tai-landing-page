@@ -22,6 +22,10 @@ if (!("IntersectionObserver" in globalThis)) {
   });
 }
 
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function scrollIntoView() {};
+}
+
 if (!("ResizeObserver" in globalThis)) {
   class StubResizeObserver implements ResizeObserver {
     observe() {}

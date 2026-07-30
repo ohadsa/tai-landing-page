@@ -67,15 +67,30 @@ export function ArticleScroller({
     const resizeObserver = new ResizeObserver(syncScrollable);
     resizeObserver.observe(scroller);
 
+    // In a right-to-left scroller the start is scrollLeft 0 and scrolling
+    // onward drives it negative, so raw comparisons against a positive max
+    // never fire. Measuring distance travelled works in both directions.
+    const rtl = getComputedStyle(scroller).direction === "rtl";
+
+    // Guarantee the first card sits at the reader's starting edge. Browsers
+    // have disagreed historically about the initial scrollLeft of an RTL
+    // scroller, and iOS Safari in particular does not always land on it.
+    const firstCard = scroller.querySelector(".article-card");
+    firstCard?.scrollIntoView({ inline: "start", block: "nearest" });
+
     let timer: ReturnType<typeof setInterval> | undefined;
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       let direction = 1;
       timer = setInterval(() => {
         if (paused || dragging || window.innerWidth < 700) return;
         const max = scroller.scrollWidth - scroller.clientWidth;
-        if (scroller.scrollLeft >= max - 5) direction = -1;
-        if (scroller.scrollLeft <= 5) direction = 1;
-        scroller.scrollBy({ left: direction * 260, behavior: "smooth" });
+        const travelled = Math.abs(scroller.scrollLeft);
+        if (travelled >= max - 5) direction = -1;
+        if (travelled <= 5) direction = 1;
+        scroller.scrollBy({
+          left: direction * 260 * (rtl ? -1 : 1),
+          behavior: "smooth",
+        });
       }, 4200);
     }
 
