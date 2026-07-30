@@ -28,6 +28,12 @@ export function generateMetadata(): Metadata {
   return {
     metadataBase: new URL(site.url),
     alternates: { canonical: "/" },
+    // Stamps the deployed commit into the page so you can confirm exactly which
+    // version is live: view source and look for <meta name="build">. Vercel sets
+    // VERCEL_GIT_COMMIT_SHA at build time; locally it reads "local".
+    other: {
+      build: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local",
+    },
     title: seo.title,
     description: seo.description,
     openGraph: {
