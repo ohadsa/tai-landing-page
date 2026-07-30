@@ -577,6 +577,43 @@ Widen the Vitest `include` pattern in `vitest.config.ts` so `.ts` test files are
 include: ["app/**/*.test.{ts,tsx}"],
 ```
 
+Importing `app/layout.tsx` pulls in `next/font/google`, which Next.js rewrites via its SWC
+transform at build time. In a plain Vitest environment it is not callable and the suite dies
+with `TypeError: Geist is not a function`. Stub it — create `test/stubs/next-font-google.ts`:
+
+```ts
+type FontResult = {
+  className: string;
+  variable: string;
+  style: { fontFamily: string };
+};
+
+const stub = (family: string) => (): FontResult => ({
+  className: `stub-${family.toLowerCase()}`,
+  variable: `--font-${family.toLowerCase()}`,
+  style: { fontFamily: family },
+});
+
+export const Geist = stub("Geist");
+export const Geist_Mono = stub("GeistMono");
+```
+
+and alias it in `vitest.config.ts`, adding this `resolve` block alongside `plugins` and `test`:
+
+```ts
+import { fileURLToPath } from "node:url";
+
+  resolve: {
+    alias: {
+      "next/font/google": fileURLToPath(
+        new URL("./test/stubs/next-font-google.ts", import.meta.url),
+      ),
+    },
+  },
+```
+
+This stubs font *loading* only. These tests assert on metadata, so nothing under test is faked.
+
 - [ ] **Step 2: Run the test to verify it fails**
 
 ```bash
