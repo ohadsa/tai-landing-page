@@ -50,7 +50,15 @@ export function generateMetadata(): Metadata {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#f6eee3",
+  /**
+   * Paints the browser chrome above the page — the status bar strip on iOS,
+   * the toolbar on Android.
+   *
+   * Must equal --cream exactly. The scrolled header renders cream at 84% over
+   * a cream page, so anything else leaves a visible seam right above it. The
+   * reference template shipped #f6eee3 here, one shade off the palette.
+   */
+  themeColor: "#f7f0e7",
 };
 
 export default function RootLayout({
