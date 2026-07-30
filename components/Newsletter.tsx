@@ -1,12 +1,18 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
 import type { SiteContent } from "@/lib/content";
+import { isConfiguredEndpoint } from "@/lib/forms";
+
+type Status = "idle" | "sending" | "success" | "error";
 
 /**
- * Renders only when `newsletter.form_action` is set in the YAML.
+ * Renders only when `newsletter.form_action` names a real endpoint.
  *
- * An empty form_action would produce a form that posts to the current page:
- * the visitor sees their input vanish and assumes they subscribed, and nobody
- * receives anything. Hiding the section until there is a real endpoint is the
- * only honest behaviour. Fill in form_action and the section appears.
+ * The reference design shipped `action="#"` with a script that printed a
+ * thank-you message and sent nothing. That is the one behaviour worth refusing:
+ * a visitor believes they subscribed, and no one ever receives the address.
+ * With no endpoint configured the section is simply absent.
  */
 export function Newsletter({
   newsletter,
@@ -14,43 +20,79 @@ export function Newsletter({
   newsletter: SiteContent["newsletter"];
 }) {
   const action = newsletter.form_action?.trim();
-  if (!action) return null;
+  const [status, setStatus] = useState<Status>("idle");
 
-  // Mailchimp's embedded forms expect the address field to be named EMAIL.
-  const fieldName =
-    newsletter.provider?.toLowerCase() === "mailchimp" ? "EMAIL" : "email";
+  if (!isConfiguredEndpoint(action)) return null;
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    setStatus("sending");
+
+    try {
+      const response = await fetch(action as string, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      form.reset();
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  const message =
+    status === "success"
+      ? newsletter.success_message
+      : status === "error"
+        ? newsletter.error_message
+        : newsletter.privacy_note;
 
   return (
-    <section className="section newsletter" aria-labelledby="newsletter-title">
-      <div className="container newsletter__inner">
+    <section className="newsletter" aria-labelledby="newsletter-title">
+      <div className="container newsletter-inner">
         <p className="eyebrow">{newsletter.eyebrow}</p>
-        <h2 className="section__title" id="newsletter-title">
+        <h2 className="section-title" id="newsletter-title">
           {newsletter.title}
         </h2>
-        <p className="newsletter__description">{newsletter.description}</p>
+        <p className="newsletter-description">{newsletter.description}</p>
 
-        <form
-          className="newsletter__form"
-          action={action}
-          method="post"
-          target="_blank"
-        >
+        <form className="newsletter-form" onSubmit={onSubmit}>
+          <label className="visually-hidden" htmlFor="newsletter-name">
+            {newsletter.name_placeholder}
+          </label>
+          <input
+            id="newsletter-name"
+            type="text"
+            name="first_name"
+            placeholder={newsletter.name_placeholder}
+            autoComplete="given-name"
+          />
+
           <label className="visually-hidden" htmlFor="newsletter-email">
-            Email address
+            {newsletter.email_placeholder}
           </label>
           <input
             id="newsletter-email"
-            className="newsletter__input"
             type="email"
-            name={fieldName}
-            placeholder="you@example.com"
+            name="email"
+            placeholder={newsletter.email_placeholder}
             autoComplete="email"
             required
           />
-          <button className="btn btn--primary" type="submit">
-            Subscribe
+
+          <button type="submit" disabled={status === "sending"}>
+            {status === "sending"
+              ? newsletter.sending_label
+              : newsletter.button_label}
           </button>
         </form>
+
+        <p className="privacy-note form-status" data-state={status} aria-live="polite">
+          {message}
+        </p>
       </div>
     </section>
   );

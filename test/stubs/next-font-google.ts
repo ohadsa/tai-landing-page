@@ -16,6 +16,8 @@ const stub = (family: string) => (): FontResult => ({
   style: { fontFamily: family },
 });
 
+export const Noto_Sans_Hebrew = stub("NotoSansHebrew");
+export const Noto_Serif_Hebrew = stub("NotoSerifHebrew");
 export const Instrument_Serif = stub("InstrumentSerif");
 export const Inter = stub("Inter");
 export const Geist = stub("Geist");

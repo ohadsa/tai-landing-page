@@ -5,6 +5,7 @@ import { parse } from "yaml";
 export type NavItem = { label: string; href: string };
 export type ImageRef = { src: string; alt: string };
 export type ButtonRef = { label: string; href: string };
+export type TitleSegment = { text: string; accent?: boolean };
 
 export type Article = {
   title: string;
@@ -12,6 +13,8 @@ export type Article = {
   publication: string;
   published_at: string;
   category: string;
+  meta_display: string;
+  published_label: string;
   image: ImageRef;
   url: string;
 };
@@ -30,92 +33,195 @@ export type Workshop = {
   capacity: number;
   available_places: number;
   price: { amount: number; currency: string };
+  meta_display: string;
+  dates_display: string;
+  structure_display: string;
+  availability_display: string;
+  price_display: string;
   image: ImageRef;
   registration_url: string;
 };
 
-export type Testimonial = { quote: string; name: string; context: string };
+export type ExperienceItem = {
+  number: string;
+  title: string;
+  description: string;
+};
+
+export type Testimonial = {
+  quote: string;
+  name: string;
+  context: string;
+  attribution_display: string;
+};
 
 export type SiteContent = {
   site: {
     name: string;
     logo_text: string;
+    descriptor: string;
     language: string;
+    direction: "rtl" | "ltr";
     email: string;
+    location: string;
     url: string;
+    /** Tiger mark alone — used where the full lockup would be illegible. */
+    mark: ImageRef;
+    /** Complete lockup: mark, wordmark and tagline. */
+    lockup: ImageRef;
+  };
+  ui: {
+    home_label: string;
+    main_navigation_aria: string;
+    mobile_navigation_aria: string;
+    menu_open: string;
+    menu_close: string;
+    testimonial_quote_mark: string;
+    menu_open_symbol: string;
+    menu_close_symbol: string;
+    arrow_symbol: string;
+    highlight_symbol: string;
+    separator_symbol: string;
+    brand_home_aria: string;
+    image_pending_label: string;
   };
   seo: { title: string; description: string; social_image: string };
   navigation: NavItem[];
+  navigation_cta: ButtonRef;
   hero: {
     eyebrow: string;
-    title: string;
+    title_segments: TitleSegment[];
     description: string;
+    note: string;
+    scroll_note: string;
     primary_button: ButtonRef;
     secondary_button: ButtonRef;
     portrait: ImageRef;
   };
-  writing: { title: string; introduction: string; articles: Article[] };
+  writing: {
+    eyebrow: string;
+    title: string;
+    introduction: string;
+    scroller_aria: string;
+    article_read_label: string;
+    drag_hint: string;
+    all_writing_label: string;
+    all_writing_url: string;
+    articles: Article[];
+  };
   about: {
+    eyebrow: string;
     title: string;
     lead: string;
     paragraphs: string[];
     portrait: ImageRef;
     highlights: string[];
   };
-  workshops: { title: string; introduction: string; items: Workshop[] };
-  testimonials: { title: string; items: Testimonial[] };
+  workshops: {
+    eyebrow: string;
+    title: string;
+    introduction: string;
+    empty_message: string;
+    reserve_label: string;
+    details_labels: {
+      dates: string;
+      time: string;
+      location: string;
+      structure: string;
+      availability: string;
+    };
+    items: Workshop[];
+  };
+  experience: { eyebrow: string; title: string; items: ExperienceItem[] };
+  testimonials: { eyebrow: string; title: string; items: Testimonial[] };
   newsletter: {
     eyebrow: string;
     title: string;
     description: string;
-    provider: string;
+    privacy_note: string;
+    name_placeholder: string;
+    email_placeholder: string;
+    button_label: string;
+    success_message: string;
+    error_message: string;
+    sending_label: string;
     form_action: string;
   };
   contact: {
+    eyebrow: string;
     title: string;
     description: string;
     email: string;
+    form_action: string;
+    mailto_fallback_note: string;
+    fields: {
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
+      submit: string;
+    };
+    success_message: string;
+    error_message: string;
+    sending_label: string;
     subjects: string[];
   };
-  social: { instagram?: string; facebook?: string; linkedin?: string };
-  footer: { sentence: string; copyright: string };
+  social: { items: NavItem[] };
+  footer: {
+    sentence: string;
+    copyright: string;
+    photo_note: string;
+    legal: NavItem[];
+  };
 };
 
 const CONTENT_PATH = path.join(process.cwd(), "content", "site.yaml");
 
 /**
- * Trims every string in the parsed tree.
+ * Removes the line-break artifact YAML folding leaves on block scalars.
  *
- * YAML folded scalars (`>`) preserve a trailing newline, which renders as a
- * stray space — visible, for example, between a quotation's final full stop and
- * its closing quote mark. No content field wants surrounding whitespace, so
- * stripping it everywhere is safe and removes a whole class of typographic bug.
+ * A folded scalar (`>`) keeps a trailing newline, which renders as a stray
+ * space — visible, for instance, between a quotation's closing full stop and
+ * its quote mark.
+ *
+ * It deliberately strips ONLY whitespace containing a line break. A plain
+ * leading or trailing space is meaningful content: `hero.title_segments` uses
+ * them to separate the words either side of the accented segment. A blanket
+ * `.trim()` welds those segments into one unbreakable token that overflows its
+ * column instead of wrapping.
  */
-function deepTrim<T>(value: T): T {
-  if (typeof value === "string") return value.trim() as T;
-  if (Array.isArray(value)) return value.map(deepTrim) as T;
+function stripFoldArtifacts<T>(value: T): T {
+  if (typeof value === "string") {
+    return value.replace(/^\s*[\r\n]\s*/, "").replace(/\s*[\r\n]\s*$/, "") as T;
+  }
+  if (Array.isArray(value)) return value.map(stripFoldArtifacts) as T;
   if (value !== null && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value).map(([key, inner]) => [key, deepTrim(inner)]),
+      Object.entries(value).map(([key, inner]) => [
+        key,
+        stripFoldArtifacts(inner),
+      ]),
     ) as T;
   }
   return value;
 }
 
 /**
- * Top-level sections the page composition depends on. If the YAML is edited and
- * one of these goes missing, fail loudly here with the key name rather than
- * letting a component crash on `undefined` with a stack trace that points
- * nowhere useful.
+ * Top-level sections the page composes. If the YAML is edited and one goes
+ * missing, fail loudly here with the key name rather than letting a component
+ * crash on `undefined` with a stack trace that points nowhere useful.
  */
 const REQUIRED_SECTIONS = [
   "site",
+  "ui",
   "seo",
   "navigation",
+  "navigation_cta",
   "hero",
   "writing",
   "about",
   "workshops",
+  "experience",
   "testimonials",
   "newsletter",
   "contact",
@@ -165,56 +271,5 @@ export function getContent(): SiteContent {
     );
   }
 
-  return deepTrim(data) as SiteContent;
-}
-
-/** Formats an ISO date (YYYY-MM-DD) for display, e.g. "12 June 2026". */
-export function formatDate(iso: string, locale = "en-GB"): string {
-  const date = new Date(`${iso}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return iso;
-  return new Intl.DateTimeFormat(locale, {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(date);
-}
-
-/** Formats a date range, collapsing a shared month/year where possible. */
-export function formatDateRange(startIso: string, endIso: string): string {
-  const start = new Date(`${startIso}T00:00:00Z`);
-  const end = new Date(`${endIso}T00:00:00Z`);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-    return `${startIso} – ${endIso}`;
-  }
-  const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
-  const sameMonth = sameYear && start.getUTCMonth() === end.getUTCMonth();
-  const startFmt = new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: sameMonth ? undefined : "long",
-    year: sameYear ? undefined : "numeric",
-    timeZone: "UTC",
-  }).format(start);
-  return `${startFmt} – ${formatDate(endIso)}`;
-}
-
-/** Formats a price using the currency code from the YAML. */
-export function formatPrice(amount: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat("en-GB", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  } catch {
-    // Unknown currency code — show the raw values rather than throwing.
-    return `${amount} ${currency}`;
-  }
-}
-
-/** Builds a mailto: URL with the subject pre-filled. */
-export function mailto(email: string, subject?: string): string {
-  return subject
-    ? `mailto:${email}?subject=${encodeURIComponent(subject)}`
-    : `mailto:${email}`;
+  return stripFoldArtifacts(data) as SiteContent;
 }

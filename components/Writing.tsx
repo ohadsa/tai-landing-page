@@ -1,56 +1,67 @@
 import type { SiteContent } from "@/lib/content";
-import { formatDate } from "@/lib/content";
 import { Figure } from "@/components/Figure";
-import { SectionHeader } from "@/components/SectionHeader";
+import { Reveal } from "@/components/Reveal";
+import { ArticleScroller } from "@/components/ArticleScroller";
 
-export function Writing({ writing }: { writing: SiteContent["writing"] }) {
+type WritingProps = {
+  writing: SiteContent["writing"];
+  ui: SiteContent["ui"];
+};
+
+export function Writing({ writing, ui }: WritingProps) {
   return (
-    <section className="section" id="writing" aria-labelledby="writing-title">
-      <div className="container">
-        <SectionHeader
-          title={writing.title}
-          introduction={writing.introduction}
-          id="writing-title"
-        />
+    <section className="writing" id="writing" aria-labelledby="writing-title">
+      <div className="container writing-head">
+        <Reveal>
+          <p className="eyebrow">{writing.eyebrow}</p>
+          <h2 className="section-title" id="writing-title">
+            {writing.title}
+          </h2>
+        </Reveal>
+        <Reveal>
+          <p className="section-copy">{writing.introduction}</p>
+        </Reveal>
+      </div>
 
-        <ul className="articles">
-          {writing.articles.map((article) => (
-            <li key={article.url + article.title} className="article">
-              <a
-                className="article__link"
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+      <ArticleScroller label={writing.scroller_aria}>
+        {writing.articles.map((article) => (
+          <article className="article-card" key={article.title}>
+            <a href={article.url}>
+              <div className="article-media">
                 <Figure
                   image={article.image}
-                  ratio="3 / 2"
-                  sizes="(max-width: 860px) 100vw, 45vw"
-                  className="article__figure"
+                  sizes="(max-width: 650px) 82vw, 31vw"
+                  pendingLabel={ui.image_pending_label}
                 />
+              </div>
 
-                <p className="article__meta">
-                  <span className="article__category">{article.category}</span>
-                  <span className="article__dot" aria-hidden="true">
-                    ·
-                  </span>
-                  <time dateTime={article.published_at}>
-                    {formatDate(article.published_at)}
-                  </time>
-                </p>
+              <div className="article-meta">
+                <span>{article.meta_display}</span>
+                <time dateTime={article.published_at}>
+                  {article.published_label}
+                </time>
+              </div>
 
-                <h3 className="article__title">{article.title}</h3>
-                <p className="article__description">{article.description}</p>
-                <p className="article__publication">
-                  {article.publication}
-                  <span className="article__arrow" aria-hidden="true">
-                    →
-                  </span>
-                </p>
-              </a>
-            </li>
-          ))}
-        </ul>
+              <h3 className="article-title">{article.title}</h3>
+              <p className="article-description">{article.description}</p>
+
+              <span className="article-link">
+                <span>{writing.article_read_label}</span>
+                <span aria-hidden="true">{ui.arrow_symbol}</span>
+              </span>
+            </a>
+          </article>
+        ))}
+      </ArticleScroller>
+
+      <div className="container writing-bottom">
+        <span className="drag-hint">{writing.drag_hint}</span>
+        <a className="button" href={writing.all_writing_url}>
+          <span>{writing.all_writing_label}</span>
+          <span className="button-arrow" aria-hidden="true">
+            {ui.arrow_symbol}
+          </span>
+        </a>
       </div>
     </section>
   );

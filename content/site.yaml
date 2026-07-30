@@ -1,147 +1,301 @@
+# ============================================================
+# כל הטקסט הגלוי באתר נמצא בקובץ הזה בלבד.
+# All visible text lives in this file only.
+# After editing: npm run dev (refresh) — or push, and Vercel rebuilds.
+# ============================================================
+
 site:
-  name: "Writer Name"
-  logo_text: "Writer Name"
-  language: "en"
-  email: "hello@example.com"
-  # Canonical address, no trailing slash. Used for the Open Graph URL and to
-  # resolve relative image paths in social previews.
+  # Written in Latin exactly as the logo renders it. No Hebrew spelling is
+  # guessed here — supply one and it can be swapped in.
+  name: "TAI ATAR"
+  logo_text: "TAI ATAR"
+  descriptor: "סדנאות ✦ כתיבת תסריט ✦ פרוזה מקורית"
+  language: "he"
+  direction: "rtl"
+  email: "hello@mayalevin.example"
+  location: "תל אביב"
+  # Canonical address, no trailing slash.
   url: "https://www.taiatar.com"
+  # The tiger mark alone, for the header where the full lockup would be
+  # illegible at 86px.
+  mark:
+    src: "/images/logo-mark.png"
+    alt: "סמל TAI ATAR — דמות רוכבת על טיגריס"
+  # The complete lockup: mark, wordmark and tagline.
+  lockup:
+    src: "/images/logo-lockup.png"
+    alt: "TAI ATAR — סדנאות, כתיבת תסריט ופרוזה מקורית"
+
+# Interface strings — labels, accessible names, and symbols.
+ui:
+  home_label: "דף הבית"
+  main_navigation_aria: "ניווט ראשי"
+  mobile_navigation_aria: "ניווט נייד"
+  menu_open: "פתיחת תפריט"
+  menu_close: "סגירת תפריט"
+  testimonial_quote_mark: "״"
+  menu_open_symbol: "☰"
+  menu_close_symbol: "×"
+  arrow_symbol: "←"
+  highlight_symbol: "✦"
+  separator_symbol: "·"
+  brand_home_aria: "TAI ATAR — דף הבית"
+  image_pending_label: "תמונה תתווסף כאן"
 
 seo:
-  title: "Writer Name — Writer and Workshop Facilitator"
-  description: "Essays, workshops, and conversations about identity, creativity, and personal stories."
-  social_image: "/images/social-preview.jpg"
+  title: "TAI ATAR — סדנאות, כתיבת תסריט ופרוזה מקורית"
+  description: "מסות, סיפורים וסדנאות כתיבה על זיכרון, זהות, יחסים והחיים הפנימיים שלנו."
+  social_image: "/images/social-card.jpg"
 
 navigation:
-  - label: "Writing"
+  - label: "כתיבה"
     href: "#writing"
-  - label: "About"
+  - label: "אודות"
     href: "#about"
-  - label: "Workshops"
+  - label: "סדנאות"
     href: "#workshops"
-  - label: "Contact"
+  - label: "יצירת קשר"
     href: "#contact"
 
+navigation_cta:
+  label: "לסדנאות הקרובות"
+  href: "#workshops"
+
 hero:
-  eyebrow: "Writer · Facilitator"
-  title: "I write about the stories we carry."
-  description: >
-    Essays, workshops, and conversations about identity,
-    relationships, creativity, and the inner life.
+  eyebrow: "כתיבה שמתחילה במה שקשה לומר"
+  # Each segment renders in order; accent: true colours it and sets it in italic.
+  title_segments:
+    - text: "אני כותבת על החיים שאנחנו "
+    - text: "נושאות"
+      accent: true
+    - text: " בתוכנו."
+  description: "מסות, סיפורים וסדנאות על זיכרון, זהות, אינטימיות — ועל הרגעים השקטים שמשנים אותנו בלי להודיע."
+  note: "מכתבים חדשים ותאריכי סדנאות, כמה פעמים בכל עונה."
+  scroll_note: "להמשיך למטה"
   primary_button:
-    label: "Explore my writing"
+    label: "לקריאת הכתיבה"
     href: "#writing"
   secondary_button:
-    label: "View workshops"
+    label: "לסדנאות הקרובות"
     href: "#workshops"
   portrait:
-    src: "/images/portraits/hero.jpg"
-    alt: "Portrait of Writer Name"
+    src: "/images/hero-portrait.jpg"
+    alt: "דיוקן של הכותבת יושבת מול מחשב נייד, מחייכת אל המצלמה"
 
 writing:
-  title: "Selected writing"
-  introduction: "Essays, observations, and personal stories."
+  eyebrow: "כתיבה נבחרת"
+  title: "מילים לדברים שאין להם עדיין שם."
+  introduction: "מסות שפורסמו, רשימות אישיות ושברים מתוך חקירה מתמשכת של זיכרון, קשר, יצירה והיכולת להתחיל שוב."
+  scroller_aria: "טקסטים נבחרים — ניתן לגרור לצדדים"
+  article_read_label: "לקריאת הטקסט"
+  drag_hint: "גררו לצדדים כדי לגלות טקסטים נוספים"
+  all_writing_label: "לכל הטקסטים"
+  all_writing_url: "https://www.mymillies.com/members-area/d7e33163-7cc3-411b-a5d0-af4440b6c49560188/profile"
   articles:
-    - title: "The Shape of Memory"
-      description: "An essay about the stories we preserve and the ones we rewrite."
-      publication: "Publication Name"
-      published_at: "2026-06-12"
-      category: "Personal Essay"
+    - title: "גזלייטינג וגוסטינג תודה שנולדתם"
+      description: "על שלוש אחיות מדור אחר, על ג׳ן זי ועל הפער שנפער בין הדורות."
+      publication: "מילי'ס"
+      published_at: "2026-07-02"
+      category: "מילי'ס"
+      meta_display: "מילי'ס · 5 דקות קריאה"
+      published_label: "2 ביולי 2026"
       image:
-        src: "/images/articles/shape-of-memory.jpg"
-        alt: "Abstract shadow across a wall"
-      url: "https://example.com/article"
+        src: "/images/articles/gaslighting.jpg"
+        alt: "תמונת נושא לטקסט ״גזלייטינג וגוסטינג תודה שנולדתם״"
+      url: "https://www.mymillies.com/post/%D7%92%D7%96%D7%9C%D7%99%D7%99%D7%98%D7%99%D7%A0%D7%92-%D7%95%D7%92%D7%95%D7%A1%D7%98%D7%99%D7%A0%D7%92-%D7%AA%D7%95%D7%93%D7%94-%D7%A9%D7%A0%D7%95%D7%9C%D7%93%D7%AA%D7%9D"
 
-    - title: "Learning to Stay"
-      description: "A reflection on intimacy, distance, and belonging."
-      publication: "Publication Name"
-      published_at: "2026-04-18"
-      category: "Relationships"
+    - title: "קונדום זה על הפנים לא?"
+      description: "על היריון לא מתוכנן, על תגובות שמחמיצות את הרגע ועל מי נושאת באחריות."
+      publication: "מילי'ס"
+      published_at: "2026-05-28"
+      category: "מילי'ס"
+      meta_display: "מילי'ס · 4 דקות קריאה"
+      published_label: "28 במאי 2026"
       image:
-        src: "/images/articles/learning-to-stay.jpg"
-        alt: "Two chairs beside a window"
-      url: "https://example.com/article"
+        src: "/images/articles/condom.jpg"
+        alt: "תמונת נושא לטקסט ״קונדום זה על הפנים לא?״"
+      url: "https://www.mymillies.com/post/%D7%95%D7%A0%D7%93%D7%95%D7%9D-%D7%96%D7%94-%D7%A2%D7%9C-%D7%94%D7%A4%D7%A0%D7%99%D7%9D-%D7%9C%D7%90"
+
+    - title: "למי ששכל הרבה, קצת או בכלל לא"
+      description: "רשימה אישית מן הימים שאחרי אוקטובר 2023, על אובדן ועל מה שנשאר."
+      publication: "מילי'ס"
+      published_at: "2026-04-21"
+      category: "מילי'ס"
+      meta_display: "מילי'ס · 4 דקות קריאה"
+      published_label: "21 באפריל 2026"
+      image:
+        src: "/images/articles/who-lost.jpg"
+        alt: "תמונת נושא לטקסט ״למי ששכל הרבה, קצת או בכלל לא״"
+      url: "https://www.mymillies.com/post/%D7%9C%D7%9E%D7%99-%D7%A9%D7%A9%D7%9B%D7%9C-%D7%94%D7%A8%D7%91%D7%94-%D7%A7%D7%A6%D7%AA-%D7%90%D7%95-%D7%91%D7%9B%D7%9C%D7%9C-%D7%9C%D7%90"
 
 about:
-  title: "About"
-  lead: "I write to understand the things we rarely say aloud."
+  eyebrow: "אודות"
+  title: "הכתיבה מתחילה במקום שבו הוודאות נגמרת."
+  lead: "אני כותבת כדי להבין את הדברים שאנחנו כמעט אף פעם לא אומרות בקול."
   paragraphs:
-    - >
-      First biography paragraph. This should describe the writer,
-      her perspective, and the subjects she explores.
-    - >
-      Second paragraph about professional experience, publications,
-      workshops, or creative background.
+    - "מיה לוין היא כותבת ומנחת סדנאות מתל אביב. המסות שלה עוסקות בזיכרון, ביחסים, בזהות יצירתית ובמרחק שבין החיים שדמיינו לבין החיים שאנחנו חיות."
+    - "הכתיבה שלה פורסמה בכתבי עת עצמאיים והגיעה לקוראות דרך הרצאות, מעגלי כתיבה אינטימיים וסדנאות עומק. מבחינתה, כתיבה היא גם אמנות וגם דרך להקדיש תשומת לב מדויקת יותר לעולם."
   portrait:
-    src: "/images/portraits/about.jpg"
-    alt: "Writer Name sitting beside a window"
+    src: "/images/about-portrait.jpg"
+    alt: "הכותבת מחייכת ומחזיקה ציור של עץ וירח, מכחול בין שיניה"
   highlights:
-    - "Published in Publication One"
-    - "Facilitates intimate writing workshops"
-    - "Based in Tel Aviv"
+    - "פורסמה בכתב העת השקט, החלון הצפוני ורשימות שדה"
+    - "מנחה סדנאות כתיבה אינטימיות בעברית ובאנגלית"
+    - "מתל אביב וזמינה להרצאות ולשיתופי פעולה"
 
 workshops:
-  title: "Upcoming workshops"
-  introduction: "Small-group workshops for people who want to write with honesty and depth."
+  eyebrow: "הסדנאות הקרובות"
+  title: "מקום לכתוב בו בכנות ובעומק."
+  introduction: "קבוצות קטנות, הנחיה מדויקת, קריאה קרובה ומספיק שקט כדי לשמוע מה הקול שלך מנסה לומר."
+  empty_message: "כרגע אין מועדים פתוחים. אפשר להצטרף לרשימת המכתבים ולקבל הודעה כשהסדנה הבאה נפתחת."
+  reserve_label: "שמירת מקום"
+  details_labels:
+    dates: "תאריכים"
+    time: "שעה"
+    location: "מיקום"
+    structure: "מבנה"
+    availability: "זמינות"
   items:
-    - title: "Writing from Memory"
+    - title: "לכתוב מתוך זיכרון"
       slug: "writing-from-memory"
-      description: >
-        A four-session workshop exploring memory,
-        voice, and personal narrative.
+      description: "סדנה בת ארבעה מפגשים על זיכרון, קול אישי והמבנה הסמוי של הסיפור האישי."
       start_date: "2026-09-12"
       end_date: "2026-10-03"
       time: "18:30–21:00"
-      location: "Tel Aviv"
-      format: "In person"
-      language: "Hebrew"
+      location: "תל אביב"
+      format: "פרונטלי"
+      language: "עברית"
       sessions: 4
       capacity: 12
       available_places: 5
       price:
         amount: 1200
         currency: "ILS"
+      meta_display: "פרונטלי · עברית"
+      dates_display: "12 בספטמבר 2026 – 3 באוקטובר 2026"
+      structure_display: "4 מפגשים · עד 12 משתתפות"
+      availability_display: "5 מקומות נותרו"
+      price_display: "₪1,200"
       image:
-        src: "/images/workshops/writing-from-memory.jpg"
-        alt: "Notebook and pen on a wooden table"
-      registration_url: "https://example.com/register"
+        src: "/images/workshop-conversation.jpg"
+        alt: "שתי נשים כותבות ומשוחחות סביב שולחן"
+      registration_url: "#contact"
+
+    - title: "המעבדה למסה אישית"
+      slug: "personal-essay-lab"
+      description: "סטודיו מקוון וממוקד להפיכת חוויה אישית למסה בהירה, מדויקת ומהדהדת."
+      start_date: "2026-10-20"
+      end_date: "2026-11-24"
+      time: "19:00–21:15"
+      location: "אונליין"
+      format: "מפגש חי בזום"
+      language: "עברית"
+      sessions: 6
+      capacity: 10
+      available_places: 8
+      price:
+        amount: 1450
+        currency: "ILS"
+      meta_display: "מפגש חי בזום · עברית"
+      dates_display: "20 באוקטובר 2026 – 24 בנובמבר 2026"
+      structure_display: "6 מפגשים · עד 10 משתתפות"
+      availability_display: "8 מקומות נותרו"
+      price_display: "₪1,450"
+      image:
+        src: "/images/workshop-table.jpg"
+        alt: "שתי נשים עובדות יחד בסדנה יצירתית"
+      registration_url: "#contact"
+
+experience:
+  eyebrow: "איך זה מרגיש"
+  title: "עבודה רצינית. אווירה אנושית."
+  items:
+    - number: "01"
+      title: "קבוצות קטנות"
+      description: "מספיק אינטימיות לתשומת לב אמיתית, בלי לדרוש מאף אחת להופיע או להרשים."
+    - number: "02"
+      title: "תרגול מונחה"
+      description: "תרגילים, קריאה וכלים פרקטיים שמובילים את הטקסט צעד אחד קדימה."
+    - number: "03"
+      title: "משוב מדויק"
+      description: "תגובה נדיבה וספציפית שמתמקדת בטקסט ובכוונה של מי שכתבה אותו."
+    - number: "04"
+      title: "בלי ניסיון קודם"
+      description: "סקרנות ונכונות מספיקות. החדר פוגש כל כותבת במקום שבו היא נמצאת."
 
 testimonials:
-  title: "From previous participants"
+  eyebrow: "מילים ממשתתפות"
+  title: "מה נשאר איתן אחרי הסדנה."
   items:
-    - quote: >
-        The workshop helped me find a voice that felt honest,
-        clear, and entirely my own.
-      name: "Participant Name"
-      context: "Writing from Memory, 2025"
+    - quote: "הסדנה עזרה לי למצוא קול שהרגיש כן, ברור ולראשונה באמת שלי."
+      name: "דנה ר׳"
+      context: "לכתוב מתוך זיכרון, 2025"
+      attribution_display: "דנה ר׳ · לכתוב מתוך זיכרון, 2025"
+    - quote: "מיה יוצרת את החדר הנדיר שבו עבודה רצינית וחום אמיתי יכולים להתקיים יחד."
+      name: "נועה ש׳"
+      context: "המעבדה למסה אישית, 2025"
+      attribution_display: "נועה ש׳ · המעבדה למסה אישית, 2025"
+    - quote: "הגעתי עם שברים ויצאתי עם טיוטה, שגרת כתיבה ויחסים חדשים עם המילים שלי."
+      name: "לאה מ׳"
+      context: "לכתוב מתוך זיכרון, 2024"
+      attribution_display: "לאה מ׳ · לכתוב מתוך זיכרון, 2024"
 
 newsletter:
-  eyebrow: "Letters, occasionally"
-  title: "Stay close to the writing."
-  description: >
-    New essays, workshop announcements,
-    reading recommendations, and notes from the writing process.
-  provider: "mailchimp"
+  eyebrow: "מכתבים, מדי פעם"
+  title: "להישאר קרובה לכתיבה."
+  description: "מסות חדשות, פתיחת סדנאות, המלצות קריאה ורשימות מתהליך הכתיבה."
+  privacy_note: "כמה מכתבים שקטים בכל עונה. אפשר להסיר את עצמך בכל רגע."
+  name_placeholder: "שם פרטי"
+  email_placeholder: "כתובת אימייל"
+  button_label: "הצטרפות לרשימה"
+  success_message: "תודה. נשמח לשלוח לך את המכתב הבא."
+  error_message: "משהו השתבש. אפשר לנסות שוב או לכתוב לי ישירות במייל."
+  sending_label: "שולח…"
+  # Paste the Formspree endpoint here, e.g. https://formspree.io/f/abcdwxyz
+  # While this is empty the whole section is hidden, so no one can submit into
+  # a void believing they subscribed.
   form_action: ""
 
 contact:
-  title: "Let’s talk"
-  description: >
-    For workshop questions, collaborations,
-    speaking invitations, or general messages.
-  email: "hello@example.com"
+  eyebrow: "יצירת קשר"
+  title: "בואי נתחיל שיחה."
+  description: "לשאלות על סדנאות, שיתופי פעולה, הרצאות, תקשורת או פשוט שלום עם מחשבה."
+  email: "hello@mayalevin.example"
+  # Paste the Formspree endpoint here. While empty, the form falls back to
+  # opening the visitor's mail client instead of silently discarding messages.
+  form_action: ""
+  mailto_fallback_note: "הטופס ייפתח בתוכנת הדואר שלך."
+  fields:
+    name: "שם"
+    email: "אימייל"
+    subject: "נושא"
+    message: "הודעה"
+    submit: "שליחת הודעה"
+  success_message: "תודה. ההודעה נשלחה ואחזור אלייך בהקדם."
+  error_message: "ההודעה לא נשלחה. אפשר לנסות שוב או לכתוב ישירות למייל שלמעלה."
+  sending_label: "שולח…"
   subjects:
-    - "Workshop question"
-    - "Collaboration"
-    - "Speaking invitation"
-    - "Press"
-    - "Other"
+    - "שאלה על סדנה"
+    - "שיתוף פעולה"
+    - "הזמנה להרצאה"
+    - "תקשורת"
+    - "אחר"
 
 social:
-  instagram: "https://instagram.com/example"
-  facebook: ""
-  linkedin: ""
+  items:
+    - label: "Instagram"
+      href: "#" # TODO: Add Instagram link
+    - label: "Facebook"
+      href: "#" # TODO: Add Facebook link
+    - label: "LinkedIn"
+      href: "#" # TODO: Add LinkedIn link
 
 footer:
-  sentence: "Writing about the inner lives we rarely speak about."
-  copyright: "© 2026 Writer Name"
+  sentence: "כותבת על החיים הפנימיים שאנחנו כמעט לא מדברות עליהם."
+  copyright: "© 2026 TAI ATAR"
+  photo_note: "צילומי הדגמה — להחלפה בצילומים אישיים לפני ההשקה"
+  legal:
+    - label: "פרטיות"
+      href: "#"
+    - label: "נגישות"
+      href: "#"

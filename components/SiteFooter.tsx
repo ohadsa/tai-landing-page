@@ -1,47 +1,58 @@
+import Image from "next/image";
 import type { SiteContent } from "@/lib/content";
+import { imageExists } from "@/components/Figure";
 
-const SOCIAL_LABELS: Record<string, string> = {
-  instagram: "Instagram",
-  facebook: "Facebook",
-  linkedin: "LinkedIn",
+type SiteFooterProps = {
+  site: SiteContent["site"];
+  social: SiteContent["social"];
+  footer: SiteContent["footer"];
 };
 
-export function SiteFooter({
-  footer,
-  social,
-}: {
-  footer: SiteContent["footer"];
-  social: SiteContent["social"];
-}) {
-  // Empty strings in the YAML mean "no account" — skip them rather than
-  // rendering a link that goes nowhere.
-  const links = Object.entries(social).filter(
-    ([, url]) => typeof url === "string" && url.trim() !== "",
-  );
+export function SiteFooter({ site, social, footer }: SiteFooterProps) {
+  // The footer's dark ground is what this logo was drawn for, so the full
+  // lockup belongs here rather than squeezed into the header bar.
+  const hasLockup = imageExists(site.lockup.src);
 
   return (
-    <footer className="footer">
-      <div className="container footer__inner">
-        <p className="footer__sentence">{footer.sentence}</p>
+    <footer className="site-footer">
+      <div className="container">
+        <div className="footer-grid">
+          <div>
+            {hasLockup ? (
+              <Image
+                className="footer-lockup"
+                src={site.lockup.src}
+                alt={site.lockup.alt}
+                width={768}
+                height={720}
+              />
+            ) : (
+              <div className="footer-name">{site.name}</div>
+            )}
+            <p className="footer-sentence">{footer.sentence}</p>
+          </div>
 
-        {links.length > 0 ? (
-          <ul className="footer__social">
-            {links.map(([key, url]) => (
-              <li key={key}>
-                <a
-                  className="link"
-                  href={url as string}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {SOCIAL_LABELS[key] ?? key}
-                </a>
+          <ul className="footer-links">
+            {social.items.map((item) => (
+              <li key={item.label}>
+                <a href={item.href}>{item.label}</a>
               </li>
             ))}
           </ul>
-        ) : null}
 
-        <p className="footer__copyright">{footer.copyright}</p>
+          <ul className="footer-legal">
+            {footer.legal.map((item) => (
+              <li key={item.label}>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="footer-bottom">
+          <span>{footer.copyright}</span>
+          <span>{footer.photo_note}</span>
+        </div>
       </div>
     </footer>
   );

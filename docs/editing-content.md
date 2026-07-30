@@ -1,127 +1,127 @@
 # Editing the site
 
-All text, links, dates, prices, and image paths live in one file: **`content/site.yaml`**.
-Nothing else needs to be touched to change what the site says.
+Every visible string lives in **`content/site.yaml`** — including interface labels, button
+text, and accessible names. Nothing else needs editing to change what the site says.
 
-## Changing text
+- **Locally** (`npm run dev`): save the file, refresh the browser.
+- **Live**: commit and push. Vercel rebuilds automatically, roughly 40 seconds.
 
-Edit `content/site.yaml` and save.
-
-- **Locally** (`npm run dev`): refresh the browser. The change appears immediately.
-- **Live** (Vercel): commit and push. Vercel rebuilds automatically, roughly 40 seconds.
-
-The site is prerendered at build time, so a live change needs a push. There is no admin
-panel — editing content means editing this file.
+To confirm which version is live, view source and find `<meta name="build" content="…">`.
+It holds the deployed commit's short SHA.
 
 ## Rules that will bite you
 
-**Indentation is meaningful.** YAML uses spaces, never tabs. Keep the existing indentation
-exactly as it is.
+**Indentation is spaces, never tabs**, and it is meaningful. Keep the existing shape.
 
-**Wrap text in quotes** when it contains a colon followed by a space, or starts with a
-special character:
+**Quote anything containing a colon-space** or starting with a special character:
 
 ```yaml
-title: "Writing: a practice"   # quotes required — the colon would break it
+title: "כתיבה: תרגול"   # quotes required
 ```
 
-**Long text uses `>`.** The indented block that follows is joined into one paragraph:
+**If the build fails, read the error.** A missing top-level section is named explicitly; a
+YAML syntax error reports the line. Both fail the build rather than shipping a broken page.
 
-```yaml
-description: >
-  This becomes a single paragraph
-  even though it is written across two lines.
-```
-
-**If the build fails**, read the error. A missing top-level section is reported by name, and
-a YAML syntax error reports the line. Both fail the build rather than shipping a broken
-page.
-
-## Changing the domain
-
-`site.url` is the canonical address, used for the Open Graph URL and to resolve social
-preview images. Write it with no trailing slash:
+## Language and direction
 
 ```yaml
 site:
-  url: "https://taiatar.com"
+  language: "he"
+  direction: "rtl"
 ```
 
-If the domain ever changes, this is the only place to edit it.
+These drive `<html lang>` and `<html dir>`. Switching `direction` to `ltr` flips the whole
+layout — the CSS uses logical properties (`inset-inline-start`, not `left`), so it mirrors
+without further changes.
 
-## Adding images
+## The hero title
 
-Image slots currently render as labelled placeholders showing the file path they expect.
-Drop a real file at that path and it appears — no code change, no layout shift.
+The headline is built from segments so one word can be accented:
 
-| YAML field | Put the file at | Shape |
+```yaml
+hero:
+  title_segments:
+    - text: "אני כותבת על החיים שאנחנו "   # note the trailing space
+    - text: "נושאות"
+      accent: true                          # orange, italic
+    - text: " בתוכנו."                      # note the leading space
+```
+
+**The leading and trailing spaces are load-bearing.** They are what separates the words.
+Remove them and the three segments weld into one unbreakable word that overflows its column
+instead of wrapping. A test guards this, but it is easy to "tidy" by accident.
+
+## Images
+
+Image slots render as labelled placeholders showing the path they expect. Drop a real file
+at that path and it appears, with no layout shift.
+
+| YAML field | File location | Shape |
 | --- | --- | --- |
-| `hero.portrait.src` | `public/images/portraits/hero.jpg` | Portrait, 4:5 |
-| `about.portrait.src` | `public/images/portraits/about.jpg` | Portrait, 4:5 |
-| `writing.articles[].image.src` | `public/images/articles/<name>.jpg` | Landscape, 3:2 |
-| `workshops.items[].image.src` | `public/images/workshops/<name>.jpg` | Landscape, 3:2 |
-| `seo.social_image` | `public/images/social-preview.jpg` | 1200 × 630 px |
+| `hero.portrait.src` | `public/images/hero-portrait.jpg` | Portrait, ~3:4 |
+| `about.portrait.src` | `public/images/about-portrait.jpg` | Portrait, ~3:4 |
+| `writing.articles[].image.src` | `public/images/…` | Landscape, ~1.18:1 |
+| `workshops.items[].image.src` | `public/images/…` | Landscape, ~1.55:1 |
+| `seo.social_image` | `public/images/hero-portrait.jpg` | 1200 × 630 px |
 
-The path in the YAML is relative to `public/`, so `/images/portraits/hero.jpg` means the
-file `public/images/portraits/hero.jpg`.
+The path is relative to `public/`, so `/images/hero-portrait.jpg` means the file
+`public/images/hero-portrait.jpg`.
 
-Always write a real `alt` description. It is read aloud by screen readers, and it is what
-shows inside the placeholder while the image is missing.
+Always write a real `alt`. It is read aloud by screen readers and is what shows inside the
+placeholder while the file is missing. `og:image` is only advertised once the file exists —
+better than a link preview that renders blank.
 
-The social preview image is only advertised once the file exists. Until then no `og:image`
-tag is emitted at all — better than a link preview that renders as a blank card.
+## Forms
 
-## Turning on the newsletter
-
-The newsletter section is **hidden** while `newsletter.form_action` is empty.
-
-This is deliberate. A form with no action posts to the current page: the visitor watches the
-field clear, assumes they subscribed, and nobody receives anything. Paste your real
-Mailchimp (or other provider) form URL into `form_action` and the section appears:
+Both forms are wired for **Formspree**. Create a form there and paste the endpoint:
 
 ```yaml
 newsletter:
-  provider: "mailchimp"
-  form_action: "https://example.us1.list-manage.com/subscribe/post?u=...&id=..."
+  form_action: "https://formspree.io/f/xxxxxxxx"
+contact:
+  form_action: "https://formspree.io/f/yyyyyyyy"
 ```
 
-With `provider: "mailchimp"` the email field is named `EMAIL`, which is what Mailchimp
-expects. Any other provider gets `email`.
+Until you do:
 
-## Contact
+- **The newsletter section does not render at all.** A form posting nowhere clears the
+  field and implies success while the address reaches no one.
+- **The contact form opens the visitor's mail client** with the subject and message
+  pre-filled, and says so in a note above the button.
 
-There is no contact form and no backend. Each subject in `contact.subjects` becomes a link
-that opens the visitor's email client with that subject already filled in, addressed to
-`contact.email`.
+`"#"` counts as unconfigured — the reference template used it as a placeholder, and as a
+form action it silently posts to the current page.
 
-To change the options, edit the list. To change the destination, edit `contact.email`.
-
-## Social links
-
-Leave a platform as an empty string (`""`) and it is omitted from the footer entirely,
-rather than rendering a link that goes nowhere:
-
-```yaml
-social:
-  instagram: "https://instagram.com/example"
-  facebook: ""     # not shown
-  linkedin: ""     # not shown
-```
+Success, error, and sending states all read their text from the YAML
+(`success_message`, `error_message`, `sending_label`).
 
 ## Workshops
 
-`available_places` drives the line under each workshop. Set it to `0` and it reads
-"Fully booked" instead of "N of M places left".
+Display strings are written out rather than computed, so the Hebrew reads exactly as you
+want it:
 
-Dates are ISO format (`YYYY-MM-DD`) and are formatted for display automatically — a range
-inside one year collapses to "12 September – 3 October 2026".
+```yaml
+dates_display: "12 בספטמבר 2026 – 3 באוקטובר 2026"
+structure_display: "4 מפגשים · עד 12 משתתפות"
+availability_display: "5 מקומות נותרו"
+price_display: "₪1,200"
+```
 
-`price.currency` takes a currency code (`ILS`, `USD`, `EUR`). An unrecognised code falls
-back to showing the raw number and code rather than failing the build.
+The machine-readable fields beside them (`start_date`, `capacity`, `available_places`) are
+kept for the `<time>` element and future use. **Update both** — nothing derives one from
+the other.
+
+Empty the `items` list and the section shows `workshops.empty_message` instead.
+
+## Interface strings
+
+The `ui:` block holds everything that is not body copy — menu labels, the arrow and bullet
+symbols, and accessible names like `main_navigation_aria`. Translating the site means
+editing this block too; nothing is hardcoded in the components.
 
 ## Checking your work
 
 ```bash
-npm test     # asserts the page still renders from the YAML
+npm test       # asserts the page still renders from the YAML
 npm run build
 ```

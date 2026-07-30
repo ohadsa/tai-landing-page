@@ -1,23 +1,21 @@
 import { describe, expect, it } from "vitest";
-import {
-  formatDate,
-  formatDateRange,
-  formatPrice,
-  getContent,
-  mailto,
-} from "@/lib/content";
+import { getContent } from "@/lib/content";
+import { isConfiguredEndpoint, mailto } from "@/lib/forms";
 
 describe("getContent", () => {
   it("parses every top-level section the page composes", () => {
     const content = getContent();
     for (const key of [
       "site",
+      "ui",
       "seo",
       "navigation",
+      "navigation_cta",
       "hero",
       "writing",
       "about",
       "workshops",
+      "experience",
       "testimonials",
       "newsletter",
       "contact",
@@ -28,18 +26,41 @@ describe("getContent", () => {
     }
   });
 
-  it("strips the trailing newline YAML folded blocks leave behind", () => {
-    // Otherwise a quote renders as `own. ”` — a stray space before the
-    // closing quotation mark.
+  it("is a right-to-left Hebrew document", () => {
+    const { site } = getContent();
+    expect(site.language).toBe("he");
+    expect(site.direction).toBe("rtl");
+  });
+
+  it("has no trailing slash on the site url", () => {
+    // A trailing slash produces doubled slashes in resolved asset URLs.
+    expect(getContent().site.url).not.toMatch(/\/$/);
+  });
+
+  it("leaves no line breaks inside prose values", () => {
     const content = getContent();
-    const folded = [
+    const samples = [
       content.hero.description,
       content.testimonials.items[0].quote,
       content.contact.description,
       ...content.about.paragraphs,
     ];
-    for (const value of folded) {
-      expect(value).toBe(value.trim());
+    for (const value of samples) {
+      expect(value).not.toMatch(/[\r\n]/);
+    }
+  });
+
+  it("preserves the spaces that separate hero title segments", () => {
+    // The segments carry meaningful leading/trailing spaces so the accented
+    // word stands apart. Trimming them welds the title into one unbreakable
+    // token that overflows its grid column instead of wrapping.
+    const segments = getContent().hero.title_segments;
+    const joined = segments.map((s) => s.text).join("");
+
+    expect(joined).toContain(" ");
+    expect(joined).not.toMatch(/\S{25,}/);
+    for (const word of joined.split(/\s+/)) {
+      expect(word.length).toBeLessThan(20);
     }
   });
 
@@ -49,50 +70,59 @@ describe("getContent", () => {
     expect(getContent()).not.toBe(getContent());
     expect(getContent()).toEqual(getContent());
   });
-});
 
-describe("formatDate", () => {
-  it("renders an ISO date in long form", () => {
-    expect(formatDate("2026-06-12")).toBe("12 June 2026");
+  it("gives every hero title segment text", () => {
+    for (const segment of getContent().hero.title_segments) {
+      expect(segment.text.length).toBeGreaterThan(0);
+    }
   });
 
-  it("returns the input unchanged when it is not a real date", () => {
-    expect(formatDate("not-a-date")).toBe("not-a-date");
-  });
-});
-
-describe("formatDateRange", () => {
-  it("drops the repeated year within a single year", () => {
-    expect(formatDateRange("2026-09-12", "2026-10-03")).toBe(
-      "12 September – 3 October 2026",
-    );
-  });
-
-  it("keeps both years when the range crosses one", () => {
-    expect(formatDateRange("2026-12-20", "2027-01-10")).toBe(
-      "20 December 2026 – 10 January 2027",
-    );
+  it("gives every image an alt description", () => {
+    const content = getContent();
+    const images = [
+      content.hero.portrait,
+      content.about.portrait,
+      ...content.writing.articles.map((a) => a.image),
+      ...content.workshops.items.map((w) => w.image),
+    ];
+    for (const image of images) {
+      expect(image.alt.trim().length).toBeGreaterThan(0);
+      expect(image.src.startsWith("/")).toBe(true);
+    }
   });
 });
 
-describe("formatPrice", () => {
-  it("formats a known currency code", () => {
-    expect(formatPrice(1200, "ILS")).toContain("1,200");
+describe("isConfiguredEndpoint", () => {
+  it('rejects "#", which the reference template shipped as a placeholder', () => {
+    // As a form action "#" posts to the current page: the field clears, the
+    // visitor assumes success, and nothing is sent anywhere.
+    expect(isConfiguredEndpoint("#")).toBe(false);
   });
 
-  it("falls back to raw values for an unknown currency rather than throwing", () => {
-    expect(formatPrice(1200, "NOTACURRENCY")).toBe("1200 NOTACURRENCY");
+  it("rejects empty and whitespace-only values", () => {
+    expect(isConfiguredEndpoint("")).toBe(false);
+    expect(isConfiguredEndpoint("   ")).toBe(false);
+    expect(isConfiguredEndpoint(undefined)).toBe(false);
+  });
+
+  it("accepts a real endpoint", () => {
+    expect(isConfiguredEndpoint("https://formspree.io/f/abcdwxyz")).toBe(true);
   });
 });
 
 describe("mailto", () => {
-  it("encodes the subject", () => {
-    expect(mailto("a@b.com", "Workshop question")).toBe(
-      "mailto:a@b.com?subject=Workshop%20question",
-    );
+  it("percent-encodes spaces rather than using plus signs", () => {
+    // Mail clients render a literal "+" in a subject line.
+    const url = mailto("a@b.com", "שאלה על סדנה");
+    expect(url).not.toContain("+");
+    expect(url.startsWith("mailto:a@b.com?subject=")).toBe(true);
   });
 
-  it("omits the query string when there is no subject", () => {
+  it("includes a body when given one", () => {
+    expect(mailto("a@b.com", "s", "hello")).toContain("body=hello");
+  });
+
+  it("omits the query string when there is no subject or body", () => {
     expect(mailto("a@b.com")).toBe("mailto:a@b.com");
   });
 });

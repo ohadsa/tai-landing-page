@@ -1,36 +1,53 @@
 import type { SiteContent } from "@/lib/content";
 import { Figure } from "@/components/Figure";
+import { Reveal } from "@/components/Reveal";
 
-export function About({ about }: { about: SiteContent["about"] }) {
+type AboutProps = {
+  about: SiteContent["about"];
+  ui: SiteContent["ui"];
+};
+
+export function About({ about, ui }: AboutProps) {
   return (
-    <section className="section section--tint" id="about" aria-labelledby="about-title">
-      <div className="container about__inner">
-        <Figure
-          image={about.portrait}
-          ratio="4 / 5"
-          sizes="(max-width: 860px) 100vw, 38vw"
-          className="about__portrait"
-        />
+    <section className="about" id="about" aria-labelledby="about-title">
+      <div className="container about-grid">
+        <Reveal className="about-portrait">
+          <div className="about-portrait-wrap">
+            <Figure
+              image={about.portrait}
+              sizes="(max-width: 980px) 80vw, 38vw"
+              pendingLabel={ui.image_pending_label}
+            />
+          </div>
+        </Reveal>
 
-        <div className="about__body">
-          <h2 className="section__title" id="about-title">
-            {about.title}
-          </h2>
-          <p className="about__lead">{about.lead}</p>
+        <div className="about-content">
+          <Reveal>
+            <p className="eyebrow">{about.eyebrow}</p>
+            <h2 className="section-title" id="about-title">
+              {about.title}
+            </h2>
+            <p className="about-lead">{about.lead}</p>
+          </Reveal>
 
-          {about.paragraphs.map((paragraph, index) => (
-            <p key={index} className="about__paragraph">
-              {paragraph}
-            </p>
-          ))}
+          <Reveal className="about-paragraphs">
+            {about.paragraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </Reveal>
 
-          {about.highlights.length > 0 ? (
-            <ul className="about__highlights">
+          <Reveal>
+            <ul className="highlights">
               {about.highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
+                <li key={highlight}>
+                  <span className="highlight-symbol" aria-hidden="true">
+                    {ui.highlight_symbol}
+                  </span>
+                  <span>{highlight}</span>
+                </li>
               ))}
             </ul>
-          ) : null}
+          </Reveal>
         </div>
       </div>
     </section>

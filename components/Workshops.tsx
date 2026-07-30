@@ -1,98 +1,103 @@
 import type { SiteContent } from "@/lib/content";
-import { formatDateRange, formatPrice } from "@/lib/content";
 import { Figure } from "@/components/Figure";
-import { SectionHeader } from "@/components/SectionHeader";
+import { Reveal } from "@/components/Reveal";
 
-export function Workshops({
-  workshops,
-}: {
+type WorkshopsProps = {
   workshops: SiteContent["workshops"];
-}) {
+  ui: SiteContent["ui"];
+};
+
+export function Workshops({ workshops, ui }: WorkshopsProps) {
+  const labels = workshops.details_labels;
+
   return (
-    <section className="section" id="workshops" aria-labelledby="workshops-title">
+    <section className="workshops" id="workshops" aria-labelledby="workshops-title">
       <div className="container">
-        <SectionHeader
-          title={workshops.title}
-          introduction={workshops.introduction}
-          id="workshops-title"
-        />
+        <div className="workshop-head">
+          <Reveal>
+            <p className="eyebrow">{workshops.eyebrow}</p>
+            <h2 className="section-title" id="workshops-title">
+              {workshops.title}
+            </h2>
+          </Reveal>
+          <Reveal>
+            <p className="section-copy">{workshops.introduction}</p>
+          </Reveal>
+        </div>
 
-        <ul className="workshops">
-          {workshops.items.map((workshop) => {
-            const soldOut = workshop.available_places <= 0;
+        {workshops.items.length === 0 ? (
+          <p className="workshops-empty">{workshops.empty_message}</p>
+        ) : (
+          <ul className="workshop-grid">
+            {workshops.items.map((workshop, index) => (
+              <li key={workshop.slug}>
+                <Reveal index={index}>
+                  <article className="workshop-card">
+                    <div className="workshop-image">
+                      <Figure
+                        image={workshop.image}
+                        sizes="(max-width: 980px) 100vw, 45vw"
+                        pendingLabel={ui.image_pending_label}
+                      />
+                    </div>
 
-            return (
-              <li key={workshop.slug} className="workshop">
-                <Figure
-                  image={workshop.image}
-                  ratio="3 / 2"
-                  sizes="(max-width: 860px) 100vw, 40vw"
-                  className="workshop__figure"
-                />
+                    <div className="workshop-body">
+                      <span className="workshop-kicker">
+                        {workshop.meta_display}
+                      </span>
+                      <h3 className="workshop-title">{workshop.title}</h3>
+                      <p className="workshop-description">
+                        {workshop.description}
+                      </p>
 
-                <div className="workshop__body">
-                  <h3 className="workshop__title">{workshop.title}</h3>
-                  <p className="workshop__description">{workshop.description}</p>
+                      <dl className="workshop-details">
+                        <div className="detail">
+                          <dt className="detail-label">{labels.dates}</dt>
+                          <dd className="detail-value">
+                            {workshop.dates_display}
+                          </dd>
+                        </div>
+                        <div className="detail">
+                          <dt className="detail-label">{labels.time}</dt>
+                          <dd className="detail-value">{workshop.time}</dd>
+                        </div>
+                        <div className="detail">
+                          <dt className="detail-label">{labels.location}</dt>
+                          <dd className="detail-value">{workshop.location}</dd>
+                        </div>
+                        <div className="detail">
+                          <dt className="detail-label">{labels.structure}</dt>
+                          <dd className="detail-value">
+                            {workshop.structure_display}
+                          </dd>
+                        </div>
+                        <div className="detail">
+                          <dt className="detail-label">{labels.availability}</dt>
+                          <dd className="detail-value availability">
+                            {workshop.availability_display}
+                          </dd>
+                        </div>
+                      </dl>
 
-                  <dl className="workshop__details">
-                    <div>
-                      <dt>Dates</dt>
-                      <dd>
-                        {formatDateRange(workshop.start_date, workshop.end_date)}
-                      </dd>
+                      <div className="workshop-actions">
+                        <span className="price">{workshop.price_display}</span>
+                        <a
+                          className="button primary"
+                          href={workshop.registration_url}
+                        >
+                          <span>{workshops.reserve_label}</span>
+                          <span className="button-arrow" aria-hidden="true">
+                            {ui.arrow_symbol}
+                          </span>
+                        </a>
+                      </div>
                     </div>
-                    <div>
-                      <dt>Time</dt>
-                      <dd>{workshop.time}</dd>
-                    </div>
-                    <div>
-                      <dt>Location</dt>
-                      <dd>
-                        {workshop.location} · {workshop.format}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Language</dt>
-                      <dd>{workshop.language}</dd>
-                    </div>
-                    <div>
-                      <dt>Sessions</dt>
-                      <dd>{workshop.sessions}</dd>
-                    </div>
-                    <div>
-                      <dt>Price</dt>
-                      <dd>
-                        {formatPrice(
-                          workshop.price.amount,
-                          workshop.price.currency,
-                        )}
-                      </dd>
-                    </div>
-                  </dl>
-
-                  <div className="workshop__footer">
-                    <p
-                      className={`workshop__places${soldOut ? " workshop__places--full" : ""}`}
-                    >
-                      {soldOut
-                        ? "Fully booked"
-                        : `${workshop.available_places} of ${workshop.capacity} places left`}
-                    </p>
-
-                    <a
-                      className="btn btn--primary"
-                      href={workshop.registration_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Register
-                    </a>
-                  </div>
-                </div>
+                  </article>
+                </Reveal>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

@@ -1,34 +1,38 @@
 import type { SiteContent } from "@/lib/content";
+import { Reveal } from "@/components/Reveal";
 
-export function Testimonials({
-  testimonials,
-}: {
+type TestimonialsProps = {
   testimonials: SiteContent["testimonials"];
-}) {
+  ui: SiteContent["ui"];
+};
+
+export function Testimonials({ testimonials, ui }: TestimonialsProps) {
   if (testimonials.items.length === 0) return null;
 
   return (
-    <section
-      className="section section--tint"
-      aria-labelledby="testimonials-title"
-    >
+    <section className="testimonials" aria-labelledby="testimonials-title">
       <div className="container">
-        <h2 className="section__title section__title--centred" id="testimonials-title">
-          {testimonials.title}
-        </h2>
+        <Reveal>
+          <p className="eyebrow">{testimonials.eyebrow}</p>
+          <h2 className="section-title" id="testimonials-title">
+            {testimonials.title}
+          </h2>
+        </Reveal>
 
-        <ul className="testimonials">
-          {testimonials.items.map((item) => (
-            <li key={item.name + item.context} className="testimonial">
-              <figure>
-                <blockquote className="testimonial__quote">
-                  {item.quote}
-                </blockquote>
-                <figcaption className="testimonial__author">
-                  <span className="testimonial__name">{item.name}</span>
-                  <span className="testimonial__context">{item.context}</span>
-                </figcaption>
-              </figure>
+        <ul className="testimonial-grid">
+          {testimonials.items.map((item, index) => (
+            // The <li> stays the grid item so the 1px gap keeps drawing the
+            // hairlines between cells; the reveal wrapper sits inside it.
+            <li className="testimonial" key={item.attribution_display}>
+              <Reveal index={index}>
+                <figure>
+                  <span className="quote-mark" aria-hidden="true">
+                    {ui.testimonial_quote_mark}
+                  </span>
+                  <blockquote>{item.quote}</blockquote>
+                  <figcaption>{item.attribution_display}</figcaption>
+                </figure>
+              </Reveal>
             </li>
           ))}
         </ul>

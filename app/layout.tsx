@@ -1,20 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Inter } from "next/font/google";
+import { Noto_Sans_Hebrew, Noto_Serif_Hebrew } from "next/font/google";
 import { getContent } from "@/lib/content";
 import { imageExists } from "@/components/Figure";
 import "./globals.css";
 
-const display = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-display",
+const sans = Noto_Sans_Hebrew({
+  subsets: ["hebrew", "latin"],
+  variable: "--font-sans-he",
   display: "swap",
 });
 
-const sans = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
+const serif = Noto_Serif_Hebrew({
+  subsets: ["hebrew", "latin"],
+  variable: "--font-serif-he",
   display: "swap",
 });
 
@@ -28,9 +26,8 @@ export function generateMetadata(): Metadata {
   return {
     metadataBase: new URL(site.url),
     alternates: { canonical: "/" },
-    // Stamps the deployed commit into the page so you can confirm exactly which
-    // version is live: view source and look for <meta name="build">. Vercel sets
-    // VERCEL_GIT_COMMIT_SHA at build time; locally it reads "local".
+    // Stamps the deployed commit into the page so you can confirm which version
+    // is live: view source and look for <meta name="build">.
     other: {
       build: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local",
     },
@@ -42,8 +39,9 @@ export function generateMetadata(): Metadata {
       siteName: site.name,
       type: "website",
       url: site.url,
-      // Only advertise a social image once the file actually exists — a broken
-      // og:image renders as a blank card wherever the link is shared.
+      locale: site.language,
+      // Only advertise a social image once the file exists — a broken og:image
+      // renders as a blank card wherever the link is shared.
       ...(imageExists(seo.social_image)
         ? { images: [{ url: seo.social_image }] }
         : {}),
@@ -52,7 +50,7 @@ export function generateMetadata(): Metadata {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#fbfaf8",
+  themeColor: "#f6eee3",
 };
 
 export default function RootLayout({
@@ -61,7 +59,28 @@ export default function RootLayout({
   const { site } = getContent();
 
   return (
-    <html lang={site.language} className={`${display.variable} ${sans.variable}`}>
+    <html
+      lang={site.language}
+      dir={site.direction}
+      className={`${sans.variable} ${serif.variable}`}
+      // The inline script below adds `js` to this element before React
+      // hydrates, so the class list it finds never matches what the server
+      // rendered. Scoped to <html>; it does not mask mismatches anywhere else.
+      suppressHydrationWarning
+    >
+      <head>
+        {/*
+          Marks that scripting is available. The scroll-reveal animation hides
+          content until an observer reveals it, so without this flag a failed or
+          disabled bundle would leave the page blank. CSS only applies the
+          hidden state under `.js`.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.add('js')`,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
