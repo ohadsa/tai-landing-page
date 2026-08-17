@@ -119,15 +119,43 @@ for (const [src, out, ratio, position] of [
 const CARD_WIDTH = 900;
 const CARD_HEIGHT = Math.round(CARD_WIDTH / 1.18);
 
-for (const [src, out] of [
+for (const [src, out, position] of [
   ["assets/articles/gaslighting.jpg", "public/images/articles/gaslighting.jpg"],
   ["assets/articles/condom.jpg", "public/images/articles/condom.jpg"],
-  ["assets/articles/who-lost.jpg", "public/images/articles/who-lost.jpg"],
+  // The source is a 2.2:1 letterbox with the subject hard against the right
+  // edge, and `attention` sliced his face in half. Anchor the crop instead.
+  ["assets/articles/who-lost.jpg", "public/images/articles/who-lost.jpg", "right"],
+  ["assets/articles/train-station.jpg", "public/images/articles/train-station.jpg"],
+  ["assets/articles/humiliating.jpg", "public/images/articles/humiliating.jpg"],
+  ["assets/articles/abortion.jpg", "public/images/articles/abortion.jpg"],
 ]) {
   await sharp(src)
     // `attention` picks the most salient region rather than the centre, which
     // matters on the very wide sources.
-    .resize(CARD_WIDTH, CARD_HEIGHT, { fit: "cover", position: "attention" })
+    .resize(CARD_WIDTH, CARD_HEIGHT, {
+      fit: "cover",
+      position: position ?? "attention",
+    })
+    .jpeg({ quality: 86, mozjpeg: true })
+    .toFile(out);
+}
+
+// Workshop card images, cropped to the 1.55 ratio .workshop-image defines.
+const WORKSHOP_WIDTH = 1200;
+const WORKSHOP_HEIGHT = Math.round(WORKSHOP_WIDTH / 1.55);
+
+for (const [src, out] of [
+  [
+    "assets/workshops/writing-the-unconscious.jpg",
+    "public/images/workshops/writing-the-unconscious.jpg",
+  ],
+  ["assets/workshops/writing-drama.jpg", "public/images/workshops/writing-drama.jpg"],
+]) {
+  await sharp(src)
+    .resize(WORKSHOP_WIDTH, WORKSHOP_HEIGHT, {
+      fit: "cover",
+      position: "attention",
+    })
     .jpeg({ quality: 86, mozjpeg: true })
     .toFile(out);
 }
@@ -142,6 +170,11 @@ for (const file of [
   "public/images/articles/gaslighting.jpg",
   "public/images/articles/condom.jpg",
   "public/images/articles/who-lost.jpg",
+  "public/images/articles/train-station.jpg",
+  "public/images/articles/humiliating.jpg",
+  "public/images/articles/abortion.jpg",
+  "public/images/workshops/writing-the-unconscious.jpg",
+  "public/images/workshops/writing-drama.jpg",
 ]) {
   const meta = await sharp(file).metadata();
   console.log(`${file.padEnd(34)} ${meta.width}x${meta.height} ${meta.format}`);

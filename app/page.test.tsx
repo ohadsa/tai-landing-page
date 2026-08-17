@@ -1,7 +1,8 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import Home from "@/app/page";
 import { getContent } from "@/lib/content";
+import { isConfiguredEndpoint } from "@/lib/forms";
 
 const content = getContent();
 
@@ -15,6 +16,19 @@ describe("page renders from content/site.yaml", () => {
     // Guards the segment spacing: without it the words run together into a
     // single token too wide to wrap.
     expect(heading.textContent).not.toMatch(/\S{25,}/);
+  });
+
+  it("breaks the hero headline onto a second line", () => {
+    render(<Home />);
+    const heading = screen.getByRole("heading", { level: 1 });
+
+    for (const segment of content.hero.title_segments) {
+      expect(heading).toHaveTextContent(segment.text);
+    }
+    // A real break, not a wrap that happens to land there at one width.
+    expect(heading.querySelectorAll("br")).toHaveLength(
+      content.hero.title_segments.filter((s) => s.break_before).length,
+    );
   });
 
   it("renders the hero heading outside any scroll-reveal wrapper", () => {
@@ -52,23 +66,14 @@ describe("page renders from content/site.yaml", () => {
     }
   });
 
-  it("renders each workshop with its detail rows and price", () => {
+  it("renders each workshop with its detail rows", () => {
     render(<Home />);
     for (const workshop of content.workshops.items) {
       expect(
         screen.getByRole("heading", { name: workshop.title }),
       ).toBeInTheDocument();
       expect(screen.getByText(workshop.dates_display)).toBeInTheDocument();
-      expect(screen.getByText(workshop.availability_display)).toBeInTheDocument();
-      expect(screen.getByText(workshop.price_display)).toBeInTheDocument();
-    }
-  });
-
-  it("renders every experience item", () => {
-    render(<Home />);
-    for (const item of content.experience.items) {
-      expect(screen.getByText(item.number)).toBeInTheDocument();
-      expect(screen.getByRole("heading", { name: item.title })).toBeInTheDocument();
+      expect(screen.getByText(workshop.structure_display)).toBeInTheDocument();
     }
   });
 
@@ -90,15 +95,58 @@ describe("page renders from content/site.yaml", () => {
     ).toBeNull();
   });
 
-  it("shows the contact form with a mailto notice while unconfigured", () => {
+  it("posts the contact form to a real endpoint, with no mailto notice", () => {
+    // A configured endpoint means the form submits in place. The mailto notice
+    // is only for the unconfigured fallback and must not appear here.
+    expect(isConfiguredEndpoint(content.contact.form_action)).toBe(true);
     render(<Home />);
     expect(
       screen.getByRole("button", { name: content.contact.fields.submit }),
     ).toBeInTheDocument();
-    // The visitor is told where the message will go before they submit.
     expect(
-      screen.getByText(content.contact.mailto_fallback_note),
-    ).toBeInTheDocument();
+      screen.queryByText(content.contact.mailto_fallback_note),
+    ).toBeNull();
+  });
+
+  it("collects every lead field the form promises", () => {
+    render(<Home />);
+    for (const label of [
+      content.contact.fields.name,
+      content.contact.fields.email,
+      content.contact.fields.phone,
+      content.contact.fields.message,
+    ]) {
+      expect(screen.getByLabelText(label)).toBeRequired();
+    }
+    // The subject is a select, so it always carries one of its options rather
+    // than needing to be required.
+    expect(screen.getByLabelText(content.contact.fields.subject)).toHaveValue(
+      content.contact.subjects[0],
+    );
+  });
+
+  it("pre-fills the contact form when a workshop place is reserved", () => {
+    render(<Home />);
+
+    const workshop = content.workshops.items[0];
+    const card = screen
+      .getByRole("heading", { name: workshop.title })
+      .closest(".workshop-card") as HTMLElement;
+    fireEvent.click(
+      within(card).getByRole("link", { name: content.workshops.reserve_label }),
+    );
+
+    expect(screen.getByLabelText(content.contact.fields.subject)).toHaveValue(
+      content.contact.reserve_subject,
+    );
+    expect(screen.getByLabelText(content.contact.fields.message)).toHaveValue(
+      content.contact.reserve_message.replace("{workshop}", workshop.title),
+    );
+  });
+
+  it("keeps reserve_subject among the offered subjects", () => {
+    // A subject missing from the list would render the select blank.
+    expect(content.contact.subjects).toContain(content.contact.reserve_subject);
   });
 
   it("offers every contact subject as an option", () => {
@@ -109,12 +157,23 @@ describe("page renders from content/site.yaml", () => {
     }
   });
 
-  it("renders social and legal links in the footer", () => {
+  it("renders the legal links and copyright in the footer", () => {
     render(<Home />);
-    for (const item of [...content.social.items, ...content.footer.legal]) {
+    for (const item of content.footer.legal) {
       expect(screen.getAllByRole("link", { name: item.label }).length).toBeGreaterThan(0);
     }
     expect(screen.getByText(content.footer.copyright)).toBeInTheDocument();
+  });
+
+  it("ships a social icon only once its profile URL is real", () => {
+    // An icon still pointing at "#" looks like a working link and goes
+    // nowhere, so it stays out of the footer until the URL is filled in.
+    render(<Home />);
+    for (const item of content.social.items) {
+      expect(screen.queryAllByRole("link", { name: item.label })).toHaveLength(
+        isConfiguredEndpoint(item.href) ? 1 : 0,
+      );
+    }
   });
 
   it("falls back to an accessible placeholder for images that do not exist", () => {

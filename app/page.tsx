@@ -5,7 +5,6 @@ import { Hero } from "@/components/Hero";
 import { Writing } from "@/components/Writing";
 import { About } from "@/components/About";
 import { Workshops } from "@/components/Workshops";
-import { Experience } from "@/components/Experience";
 import { Testimonials } from "@/components/Testimonials";
 import { Newsletter } from "@/components/Newsletter";
 import { Contact } from "@/components/Contact";
@@ -27,11 +26,10 @@ export default function Home() {
       />
 
       <main>
-        <Hero hero={content.hero} site={content.site} ui={content.ui} />
+        <Hero hero={content.hero} ui={content.ui} />
         <Writing writing={content.writing} ui={content.ui} />
         <About about={content.about} ui={content.ui} />
         <Workshops workshops={content.workshops} ui={content.ui} />
-        <Experience experience={content.experience} />
         <Testimonials testimonials={content.testimonials} ui={content.ui} />
         <Newsletter newsletter={content.newsletter} />
         <Contact contact={content.contact} />

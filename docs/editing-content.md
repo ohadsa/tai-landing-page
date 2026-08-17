@@ -36,20 +36,21 @@ without further changes.
 
 ## The hero title
 
-The headline is built from segments so one word can be accented:
+The headline is built from segments so a line can be accented or set on its own row:
 
 ```yaml
 hero:
   title_segments:
-    - text: "אני כותבת על החיים שאנחנו "   # note the trailing space
-    - text: "נושאות"
-      accent: true                          # orange, italic
-    - text: " בתוכנו."                      # note the leading space
+    - text: "תאי אתר"
+    - text: "סדנאות כתיבה."
+      accent: true              # orange, italic
+      break_before: true        # starts a new line
 ```
 
-**The leading and trailing spaces are load-bearing.** They are what separates the words.
-Remove them and the three segments weld into one unbreakable word that overflows its column
-instead of wrapping. A test guards this, but it is easy to "tidy" by accident.
+**Every segment must be separated from the one before it** — either by `break_before: true`
+or by a leading/trailing space, as in `"…שאנחנו "` followed by `"נושאות"`. With neither, the
+segments weld into one unbreakable word that overflows its column instead of wrapping. A test
+guards this, but spaces are easy to "tidy" away by accident.
 
 ## Images
 
@@ -73,27 +74,60 @@ better than a link preview that renders blank.
 
 ## Forms
 
-Both forms are wired for **Formspree**. Create a form there and paste the endpoint:
+A form posts to whatever `form_action` names. Any relay that accepts a `POST` of form
+fields works; nothing in the code is tied to one provider.
+
+The contact form ships pointed at **FormSubmit**, which needs no account:
 
 ```yaml
-newsletter:
-  form_action: "https://formspree.io/f/xxxxxxxx"
 contact:
-  form_action: "https://formspree.io/f/yyyyyyyy"
+  form_action: "https://formsubmit.co/ajax/tai.atar22@gmail.com"
 ```
 
-Until you do:
+**The first submission must be activated once.** FormSubmit emails an "Activate Form" link
+to that address the first time anyone presses send; until someone clicks it, submissions are
+refused and the visitor sees the error message. This is deliberate on their side, so a form
+cannot be pointed at a stranger's inbox.
 
-- **The newsletter section does not render at all.** A form posting nowhere clears the
-  field and implies success while the address reaches no one.
-- **The contact form opens the visitor's mail client** with the subject and message
-  pre-filled, and says so in a note above the button.
+To move to Formspree instead, create a form there and swap the URL for
+`https://formspree.io/f/xxxxxxxx`. The newsletter block works the same way and is hidden
+entirely while its `form_action` is empty, since a form posting nowhere clears the field and
+implies success while the address reaches no one.
 
-`"#"` counts as unconfigured — the reference template used it as a placeholder, and as a
-form action it silently posts to the current page.
+`"#"` counts as unconfigured: the reference template used it as a placeholder, and as a form
+action it silently posts to the current page. With no endpoint at all the contact form falls
+back to opening the visitor's mail client, says so in a note above the button, and confirms
+afterwards with `mailto_opened_message`.
+
+**A 2xx is not proof of delivery.** FormSubmit answers `200` with `{"success":"false"}`
+before activation, and Formspree answers `200` with an `errors` array on a validation
+failure. `rejectedDespiteOk` in `lib/forms.ts` catches both, so the thank-you only ever
+appears for a submission that was really accepted. Add a case there for any new provider.
 
 Success, error, and sending states all read their text from the YAML
 (`success_message`, `error_message`, `sending_label`).
+
+### Reserving a workshop place
+
+Pressing **שמירת מקום** on a workshop card jumps to the contact form and fills it in:
+
+```yaml
+contact:
+  reserve_subject: "הרשמה לסדנה"          # must be one of `subjects` below
+  reserve_message: "אשמח לשמור מקום בסדנה \"{workshop}\"."
+```
+
+`{workshop}` becomes the card's title. If `reserve_subject` is not in the `subjects` list the
+select would render blank, so the code leaves the subject alone in that case and a test
+guards it.
+
+## Social links
+
+The footer draws each `social.items` entry as an icon, chosen by its `icon:` key
+(`instagram`, `facebook`, `linkedin`). `label` becomes the link's accessible name.
+
+**An item whose `href` is still `"#"` is not rendered.** The same rule as the forms: an icon
+that goes nowhere looks like a working link. Paste the real profile URL and it appears.
 
 ## Workshops
 
@@ -101,21 +135,18 @@ Display strings are written out rather than computed, so the Hebrew reads exactl
 want it:
 
 ```yaml
-dates_display: "12 בספטמבר 2026 – 3 באוקטובר 2026"
-structure_display: "4 מפגשים · עד 12 משתתפות"
-availability_display: "5 מקומות נותרו"
-price_display: "₪1,200"
+dates_display: "9 באוקטובר – 6 בנובמבר"
+structure_display: "5 מפגשים · עד 12 משתתפים"
 ```
 
-The machine-readable fields beside them (`start_date`, `capacity`, `available_places`) are
-kept for the `<time>` element and future use. **Update both** — nothing derives one from
-the other.
+The machine-readable fields beside them (`start_date`, `sessions`, `capacity`) are kept for
+the `<time>` element and future use. **Update both** — nothing derives one from the other.
 
 Empty the `items` list and the section shows `workshops.empty_message` instead.
 
 ## Interface strings
 
-The `ui:` block holds everything that is not body copy — menu labels, the arrow and bullet
+The `ui:` block holds everything that is not body copy: menu labels, the arrow and separator
 symbols, and accessible names like `main_navigation_aria`. Translating the site means
 editing this block too; nothing is hardcoded in the components.
 
