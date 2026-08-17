@@ -275,8 +275,8 @@ contact:
   # To move to another provider (Formspree, your own endpoint) just replace this
   # URL. Empty it and the form falls back to the visitor's mail client rather
   # than silently discarding messages.
-  form_action: "https://formsubmit.co/el/jotama"
-  # form_action: "https://formsubmit.co/el/juzanu"
+  # form_action: "https://formsubmit.co/el/jotama"
+  form_action: "https://formsubmit.co/el/juzanu"
   mailto_fallback_note: "הטופס ייפתח בתוכנת הדואר שלך."
   # Shown after the mail client is handed the message. Without it the button
   # looks broken on any device with no mail app registered.
