@@ -157,12 +157,21 @@ describe("page renders from content/site.yaml", () => {
     }
   });
 
-  it("renders the legal links and copyright in the footer", () => {
+  it("renders the copyright in the footer", () => {
+    render(<Home />);
+    expect(screen.getByText(content.footer.copyright)).toBeInTheDocument();
+  });
+
+  it("ships a legal link only once it points somewhere", () => {
+    // "#" is not an inert href — the browser reads it as the top of the
+    // document, so a placeholder פרטיות link scrolled the reader back to the
+    // hero instead of doing nothing. Absent is better than misleading.
     render(<Home />);
     for (const item of content.footer.legal) {
-      expect(screen.getAllByRole("link", { name: item.label }).length).toBeGreaterThan(0);
+      expect(screen.queryAllByRole("link", { name: item.label })).toHaveLength(
+        isConfiguredEndpoint(item.href) ? 1 : 0,
+      );
     }
-    expect(screen.getByText(content.footer.copyright)).toBeInTheDocument();
   });
 
   it("ships a social icon only once its profile URL is real", () => {
@@ -173,6 +182,24 @@ describe("page renders from content/site.yaml", () => {
       expect(screen.queryAllByRole("link", { name: item.label })).toHaveLength(
         isConfiguredEndpoint(item.href) ? 1 : 0,
       );
+    }
+  });
+
+  it("opens each social profile in its own tab", () => {
+    // The profiles are on other sites; replacing the page would send a reader
+    // who only wanted a glance at Instagram away from the site entirely.
+    render(<Home />);
+    const configured = content.social.items.filter((item) =>
+      isConfiguredEndpoint(item.href),
+    );
+    expect(configured.length).toBeGreaterThan(0);
+    for (const item of configured) {
+      const link = screen.getByRole("link", { name: item.label });
+      expect(link).toHaveAttribute("target", "_blank");
+      // noreferrer withholds the referrer; noopener denies the opened tab a
+      // handle back onto this window.
+      expect(link.getAttribute("rel")).toContain("noopener");
+      expect(link.getAttribute("rel")).toContain("noreferrer");
     }
   });
 

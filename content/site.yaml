@@ -83,7 +83,6 @@ writing:
   introduction: "טור אישי המתפרסם מדי כמה שבועות בבלוג של מילי'ס, טורים אישיים מדי למי שמרגישה שהעולם זז מהר מדי."
   scroller_aria: "טקסטים נבחרים, ניתן לגרור לצדדים"
   article_read_label: "לקריאת הטקסט"
-  drag_hint: "גררו לצדדים כדי לגלות טקסטים נוספים"
   articles:
     - title: "גזלייטינג וגוסטינג תודה שנולדתם"
       description: "על שלוש אחיות מדור אחר, על ג׳ן זי ועל הפער שנפער בין הדורות."
@@ -310,19 +309,171 @@ social:
   items:
     - label: "Instagram"
       icon: "instagram"
-      href: "#" # TODO: Add Instagram link
+      href: "https://www.instagram.com/tai.atar/"
     - label: "Facebook"
       icon: "facebook"
-      href: "#" # TODO: Add Facebook link
+      href: "https://www.facebook.com/tai.atar"
     - label: "LinkedIn"
       icon: "linkedin"
-      href: "#" # TODO: Add LinkedIn link
+      href: "https://www.linkedin.com/in/tai-atar-051547326/"
+
+# ============================================================
+# The two legal documents.
+#
+# Each opens as a dialog over the page when its footer link is pressed. Each
+# also stays reachable at its own address (/privacy, /accessibility) so that a
+# direct link, a search engine, or a visitor whose JavaScript failed can still
+# read it — a required statement must not depend on a script to exist.
+#
+# Each renders as a title, a date line, an opening paragraph, then its sections
+# in order. Add, reorder or delete sections freely and the document follows this
+# file. Every entry in a `body` list becomes its own paragraph, printed as plain
+# text — no markup is interpreted, which is also what keeps a pasted policy from
+# injecting anything into the page.
+#
+# Written in English by request, while the rest of the site is Hebrew. The
+# dialog and the standalone pages therefore mark this content as English and
+# left-to-right, so the punctuation sits correctly inside the RTL site.
+# ============================================================
+legal:
+  # Dismisses the dialog.
+  close_label: "Close"
+  # Shown instead at the foot of the standalone pages, where there is no dialog
+  # to dismiss.
+  back_label: "Back to homepage"
+
+  privacy:
+    title: "Privacy Policy"
+    # Browser tab and search snippet only; never rendered in the body.
+    description: "What the TAI ATAR website collects, how it is used, and how to ask to see or delete it."
+    updated_label: "Last updated: 17 August 2026"
+    intro: "This is a simple content website. There is no registration, there are no accounts, and there is no tracking. The only details that reach me are the ones you choose to type into the contact form. This page explains exactly what happens to them."
+    sections:
+      - heading: "What is collected"
+        body:
+          - "Only what you type into the contact form: your name, email address, phone number, the subject of your enquiry, and your message."
+          - "There is no sign-up and no account creation. If you have not sent the form, no identifying information about you is collected."
+      - heading: "How it is used"
+        body:
+          - "To reply to you and continue the conversation, and for nothing else."
+          - "Your details are never sold, never passed to advertisers, and never added to a mailing list. There is no active mailing list on this site."
+      - heading: "The service that delivers the form"
+        body:
+          - "Sending the form routes it through FormSubmit, a service based in the United States that forwards web forms to an email inbox. The details you typed therefore pass through their servers on the way to my mailbox, including outside Israel."
+          - "FormSubmit publishes its own privacy policy at https://formsubmit.co/privacy. Their handling of that data is governed by their policy and their terms, not by this page."
+          - "The message itself arrives in a Gmail mailbox that I control."
+      - heading: "Website hosting"
+        body:
+          - "This site is hosted by Vercel. Like any web server, it records technical details of each request in its logs — IP address, browser type, and the time of the request. These are held by the hosting provider under its own terms, and are not used by me to identify visitors."
+      - heading: "Cookies and tracking"
+        body:
+          - "This site sets no cookies of its own."
+          - "There is no Google Analytics, no advertising pixel, and no other analytics, session-recording, or heat-mapping tool."
+          - "Fonts are served from this site itself rather than from Google, so loading a page sends no request to a third-party server."
+      - heading: "Links to other websites"
+        body:
+          - "Some links lead to articles published elsewhere, and the footer icons lead to social media profiles. Once you follow one of them you are on that company's website, governed by its privacy policy rather than this one."
+          - "I have no control over what those sites collect or how they use it, and this policy does not extend to them."
+      - heading: "How long messages are kept"
+        body:
+          - "Messages stay in my mailbox for as long as the conversation remains relevant. You may ask me at any time to delete a message, and I will delete it."
+      - heading: "Your rights"
+        body:
+          - "Under the Israeli Protection of Privacy Law, 5741-1981, you have the right to review information held about you, to ask that it be corrected if it is wrong, and to ask that it be deleted."
+          - "To make such a request, write to tai.atar22@gmail.com. I will respond within a reasonable time."
+      - heading: "Security"
+        body:
+          - "I take reasonable care with the details you send. No method of transmitting information over the internet is completely secure, however, and absolute security cannot be guaranteed by this site or by any other."
+          - "Please do not send sensitive personal information through the contact form. It is there to start a conversation, not to carry confidential material."
+      - heading: "Children"
+        body:
+          - "This site is not directed at children, and I do not knowingly collect details from anyone under 16. If you believe a child has sent me their details, write to me and I will delete them."
+      - heading: "Changes to this policy"
+        body:
+          - "If this policy changes, the revised version will appear here and the date at the top will change with it. Continuing to use the site after a change means the revised policy applies."
+      - heading: "Contact"
+        body:
+          - "For any question about privacy, write to tai.atar22@gmail.com."
+
+  accessibility:
+    title: "Accessibility Statement"
+    description: "What has been done to make the TAI ATAR website accessible, how to report a barrier, and who to contact about it."
+    updated_label: "Last updated: 17 August 2026"
+    intro: "I want this site to be usable by everyone who visits it, including people who use a screen reader, enlarge text, or navigate by keyboard. This page sets out what has been done, how accessibility is maintained here, and who to contact if something does not work for you."
+    sections:
+      - heading: "Scope of this statement"
+        body:
+          - "This statement applies to the website at www.taiatar.com."
+          - "It does not cover other websites reachable from it. Articles are published on third-party sites, and the social media profiles belong to their own platforms; the accessibility of those services is set by the companies that run them."
+      - heading: "Measures taken on this site"
+        body:
+          - "The pages are built on semantic HTML with a proper heading hierarchy, so they can be navigated with a screen reader."
+          - "Every image carries a text alternative, and every icon and link has an accessible name — including the social media icons in the footer."
+          - "Every field in the contact form has a label bound to it, and the success and error messages are announced to screen readers as they appear."
+          - "The menu opens and closes from the keyboard, and the Escape key closes it. These documents open in a dialog that behaves the same way."
+          - "Anyone who has asked their operating system to reduce motion does not see the site's automatic movement."
+          - "The site is written in Hebrew with right-to-left layout throughout, including its forms."
+      # Deliberate wording, and worth understanding before editing it.
+      #
+      # Claiming full conformance that no audit supports would be the genuinely
+      # risky move: it is a statement a visitor relies on and an opponent can
+      # disprove in a single test. What this says instead is that the standard
+      # was followed, that the work is ongoing, and that reports are acted on —
+      # true today, and the position a good-faith effort actually rests on.
+      #
+      # Replace it with a conformance claim only once an audit supports one.
+      - heading: "Level of accessibility"
+        body:
+          - "This site was built following the guidance of Israeli Standard SI 5568 and WCAG 2.0 Level AA, and accessibility is treated here as continuing work rather than a task finished once."
+          - "A full audit by a certified accessibility professional has not yet been carried out, so this statement does not assert complete conformance with that standard. It describes the position as it actually stands."
+          - "Any barrier reported to me is treated as a priority, and this page is updated as the work progresses."
+      - heading: "Known limitations, and what is being done"
+        body:
+          - "The list of published pieces on the home page is a rail that scrolls sideways. Every link inside it can be reached from the keyboard, though dragging with a mouse or a finger is the easier route; improving this is on my list."
+          - "Not every colour combination on the site has yet been measured with a contrast tool. Any combination reported as hard to read will be corrected."
+          - "Where a limitation is found that cannot be fixed quickly, I will say so here and offer another way to get the same information — by email or by phone."
+      - heading: "Accessibility of the workshops themselves"
+        body:
+          - "Workshops take place at physical venues. If you have an access requirement — wheelchair access, adapted seating, or any other adjustment — write to me before registering and I will look into what can be arranged."
+      - heading: "Reporting a barrier"
+        body:
+          - "If something on this site does not work for you, I want to know. A short description of what happened, which page you were on, and what you were using to browse will help me fix it quickly."
+          - "I answer reports as soon as I am able, and I will tell you what can be done about the issue and by when."
+    # The coordinator the regulations require by name.
+    #
+    # `name` and `phone` are empty on purpose: a coordinator is a real person
+    # and is not invented here. Fill either one and its row appears; leave it
+    # empty and the row is omitted rather than shipped as a blank field. The
+    # email below is real, so the section is never left with no way to make
+    # contact — which is the part that matters both to a visitor and to the
+    # regulations.
+    contact:
+      heading: "Accessibility coordinator"
+      name: ""
+      phone: ""
+      email: "tai.atar22@gmail.com"
+      labels:
+        name: "Name"
+        phone: "Phone"
+        email: "Email"
 
 footer:
   copyright: "© 2026 TAI ATAR"
-  photo_note: "צילומי הדגמה, להחלפה בצילומים אישיים לפני ההשקה"
+  # Shown beside the copyright line, at the same small size.
+  #
+  # The labels stay Hebrew, like the rest of the site's own interface — only the
+  # documents they open are in English.
+  #
+  # `document` names which entry under `legal:` above opens in the dialog. The
+  # href stays a real address: without JavaScript, and for anyone who opens the
+  # link directly or in a new tab, it loads the standalone page instead.
+  #
+  # Drop the `document` key and the link simply navigates. Empty the href and
+  # the link stops appearing at all, rather than shipping as a dead "#".
   legal:
     - label: "פרטיות"
-      href: "#"
+      href: "/privacy"
+      document: "privacy"
     - label: "נגישות"
-      href: "#"
+      href: "/accessibility"
+      document: "accessibility"

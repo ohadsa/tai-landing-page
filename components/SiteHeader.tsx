@@ -12,6 +12,16 @@ type SiteHeaderProps = {
   /** Resolved on the server; false means the file is missing, so fall back to
    *  the wordmark alone rather than rendering a broken image. */
   hasMark: boolean;
+  /**
+   * Prepended to every navigation href.
+   *
+   * The YAML holds bare fragments (`#writing`) because the whole site used to
+   * be one page. From a document at its own route, `#writing` addresses a
+   * section of *that* document and finds nothing, so the legal pages pass "/"
+   * to send the reader home first. Defaults to "" — the homepage renders
+   * exactly the markup it always did.
+   */
+  hrefPrefix?: string;
 };
 
 export function SiteHeader({
@@ -20,6 +30,7 @@ export function SiteHeader({
   navigation,
   navigationCta,
   hasMark,
+  hrefPrefix = "",
 }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -65,7 +76,11 @@ export function SiteHeader({
     <>
       <header className={scrolled ? "site-header scrolled" : "site-header"}>
         <div className="container nav">
-          <a className="brand" href="#top" aria-label={ui.brand_home_aria}>
+          <a
+            className="brand"
+            href={`${hrefPrefix}#top`}
+            aria-label={ui.brand_home_aria}
+          >
             {hasMark ? (
               // Decorative: the link already carries an accessible name, so
               // announcing the mark as well would just repeat it.
@@ -86,11 +101,11 @@ export function SiteHeader({
 
           <nav className="nav-links" aria-label={ui.main_navigation_aria}>
             {navigation.map((item) => (
-              <a key={item.href} href={item.href}>
+              <a key={item.href} href={`${hrefPrefix}${item.href}`}>
                 {item.label}
               </a>
             ))}
-            <a className="nav-cta" href={navigationCta.href}>
+            <a className="nav-cta" href={`${hrefPrefix}${navigationCta.href}`}>
               {navigationCta.label}
             </a>
           </nav>
@@ -125,13 +140,16 @@ export function SiteHeader({
           {navigation.map((item) => (
             <a
               key={item.href}
-              href={item.href}
+              href={`${hrefPrefix}${item.href}`}
               onClick={() => setMenuOpen(false)}
             >
               {item.label}
             </a>
           ))}
-          <a href={navigationCta.href} onClick={() => setMenuOpen(false)}>
+          <a
+            href={`${hrefPrefix}${navigationCta.href}`}
+            onClick={() => setMenuOpen(false)}
+          >
             {navigationCta.label}
           </a>
         </div>

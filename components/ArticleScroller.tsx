@@ -53,20 +53,6 @@ export function ArticleScroller({
     scroller.addEventListener("mouseenter", onEnter);
     scroller.addEventListener("mouseleave", onLeave);
 
-    // The rail only needs a "drag sideways" hint when there is actually
-    // something off-screen. With few articles on a wide viewport everything
-    // fits, and the hint would be telling the reader about content that
-    // does not exist.
-    const section = scroller.closest(".writing") as HTMLElement | null;
-    const syncScrollable = () => {
-      if (!section) return;
-      const overflows = scroller.scrollWidth > scroller.clientWidth + 4;
-      section.dataset.scrollable = String(overflows);
-    };
-    syncScrollable();
-    const resizeObserver = new ResizeObserver(syncScrollable);
-    resizeObserver.observe(scroller);
-
     // In a right-to-left scroller the start is scrollLeft 0 and scrolling
     // onward drives it negative, so raw comparisons against a positive max
     // never fire. Measuring distance travelled works in both directions.
@@ -102,7 +88,6 @@ export function ArticleScroller({
       scroller.removeEventListener("pointercancel", endDrag);
       scroller.removeEventListener("mouseenter", onEnter);
       scroller.removeEventListener("mouseleave", onLeave);
-      resizeObserver.disconnect();
       if (timer) clearInterval(timer);
     };
   }, []);

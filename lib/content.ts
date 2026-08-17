@@ -14,6 +14,18 @@ export type TitleSegment = {
 /** A social link. `icon` selects the glyph the footer draws for it. */
 export type SocialItem = NavItem & { icon: string };
 
+/** Names a document under `legal`. */
+export type LegalKey = "privacy" | "accessibility";
+
+/**
+ * A footer link that may open a document in a dialog instead of navigating.
+ *
+ * `href` is always a real address, so the link keeps working when opened in a
+ * new tab, followed by a crawler, or clicked before the script has loaded.
+ * `document` is what upgrades it to a dialog.
+ */
+export type LegalLink = NavItem & { document?: LegalKey };
+
 export type Article = {
   title: string;
   description: string;
@@ -43,6 +55,35 @@ export type Workshop = {
   structure_display: string;
   image: ImageRef;
   registration_url: string;
+};
+
+/** One headed run of paragraphs inside a legal document. */
+export type LegalSection = { heading: string; body: string[] };
+
+/**
+ * The accessibility coordinator the regulations require by name.
+ *
+ * Any field may be empty. The page renders only the ones that are filled, so
+ * an unsupplied name or phone is absent rather than a blank row.
+ */
+export type AccessibilityContact = {
+  heading: string;
+  name: string;
+  phone: string;
+  email: string;
+  labels: { name: string; phone: string; email: string };
+};
+
+/** A standalone document rendered at its own route. */
+export type LegalDocument = {
+  title: string;
+  /** Tab title and search snippet; never rendered in the body. */
+  description: string;
+  updated_label: string;
+  intro: string;
+  sections: LegalSection[];
+  /** Present on the accessibility statement only. */
+  contact?: AccessibilityContact;
 };
 
 export type Testimonial = {
@@ -95,7 +136,6 @@ export type SiteContent = {
     introduction: string;
     scroller_aria: string;
     article_read_label: string;
-    drag_hint: string;
     articles: Article[];
   };
   about: {
@@ -160,10 +200,15 @@ export type SiteContent = {
     subjects: string[];
   };
   social: { items: SocialItem[] };
+  legal: {
+    close_label: string;
+    back_label: string;
+    privacy: LegalDocument;
+    accessibility: LegalDocument;
+  };
   footer: {
     copyright: string;
-    photo_note: string;
-    legal: NavItem[];
+    legal: LegalLink[];
   };
 };
 
@@ -217,6 +262,7 @@ const REQUIRED_SECTIONS = [
   "newsletter",
   "contact",
   "social",
+  "legal",
   "footer",
 ] as const;
 

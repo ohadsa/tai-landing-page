@@ -52,10 +52,6 @@ export function Writing({ writing, ui }: WritingProps) {
           </article>
         ))}
       </ArticleScroller>
-
-      <div className="container writing-bottom">
-        <span className="drag-hint">{writing.drag_hint}</span>
-      </div>
     </section>
   );
 }

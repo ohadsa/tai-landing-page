@@ -39,6 +39,7 @@ export default function Home() {
         site={content.site}
         social={content.social}
         footer={content.footer}
+        legal={content.legal}
       />
     </>
   );

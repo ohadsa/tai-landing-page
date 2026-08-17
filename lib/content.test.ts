@@ -24,6 +24,7 @@ describe("getContent", () => {
       "newsletter",
       "contact",
       "social",
+      "legal",
       "footer",
     ]) {
       expect(content).toHaveProperty(key);

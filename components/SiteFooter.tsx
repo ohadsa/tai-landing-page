@@ -2,15 +2,18 @@ import Image from "next/image";
 import type { SiteContent } from "@/lib/content";
 import { imageExists } from "@/components/Figure";
 import { SocialIcon } from "@/components/SocialIcon";
+import { LegalLinks } from "@/components/LegalLinks";
 import { isConfiguredEndpoint } from "@/lib/forms";
 
 type SiteFooterProps = {
   site: SiteContent["site"];
   social: SiteContent["social"];
   footer: SiteContent["footer"];
+  /** The documents the footer's legal links open. */
+  legal: SiteContent["legal"];
 };
 
-export function SiteFooter({ site, social, footer }: SiteFooterProps) {
+export function SiteFooter({ site, social, footer, legal }: SiteFooterProps) {
   // The footer's dark ground is what this logo was drawn for, so the full
   // lockup belongs here rather than squeezed into the header bar.
   const hasLockup = imageExists(site.lockup.src);
@@ -44,26 +47,30 @@ export function SiteFooter({ site, social, footer }: SiteFooterProps) {
             <ul className="footer-social">
               {socialLinks.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} aria-label={item.label}>
+                  {/* Profiles live on other sites, so they open alongside this
+                      page rather than replacing it. noreferrer accompanies
+                      noopener so the target learns nothing about the visit. */}
+                  <a
+                    href={item.href}
+                    aria-label={item.label}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <SocialIcon name={item.icon} />
                   </a>
                 </li>
               ))}
             </ul>
           )}
-
-          <ul className="footer-legal">
-            {footer.legal.map((item) => (
-              <li key={item.label}>
-                <a href={item.href}>{item.label}</a>
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div className="footer-bottom">
           <span>{footer.copyright}</span>
-          <span>{footer.photo_note}</span>
+          {/* Renders the links and, when one is pressed, the dialog it opens.
+              A client component, because the dialog needs state; the filtering
+              of unconfigured hrefs lives with it. Sits on the copyright line
+              rather than in a column of its own, at the same small size. */}
+          <LegalLinks links={footer.legal} legal={legal} />
         </div>
       </div>
     </footer>
