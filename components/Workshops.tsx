@@ -1,6 +1,7 @@
 import type { SiteContent } from "@/lib/content";
 import { Figure } from "@/components/Figure";
 import { Reveal } from "@/components/Reveal";
+import { ReserveButton } from "@/components/ReserveButton";
 
 type WorkshopsProps = {
   workshops: SiteContent["workshops"];
@@ -71,25 +72,15 @@ export function Workshops({ workshops, ui }: WorkshopsProps) {
                             {workshop.structure_display}
                           </dd>
                         </div>
-                        <div className="detail">
-                          <dt className="detail-label">{labels.availability}</dt>
-                          <dd className="detail-value availability">
-                            {workshop.availability_display}
-                          </dd>
-                        </div>
                       </dl>
 
                       <div className="workshop-actions">
-                        <span className="price">{workshop.price_display}</span>
-                        <a
-                          className="button primary"
+                        <ReserveButton
                           href={workshop.registration_url}
-                        >
-                          <span>{workshops.reserve_label}</span>
-                          <span className="button-arrow" aria-hidden="true">
-                            {ui.arrow_symbol}
-                          </span>
-                        </a>
+                          label={workshops.reserve_label}
+                          arrow={ui.arrow_symbol}
+                          workshop={workshop.title}
+                        />
                       </div>
                     </div>
                   </article>

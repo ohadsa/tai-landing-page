@@ -1,10 +1,10 @@
+import { Fragment } from "react";
 import type { SiteContent } from "@/lib/content";
 import { Figure } from "@/components/Figure";
 import { HeroPortrait } from "@/components/HeroPortrait";
 
 type HeroProps = {
   hero: SiteContent["hero"];
-  site: SiteContent["site"];
   ui: SiteContent["ui"];
 };
 
@@ -17,7 +17,7 @@ type HeroProps = {
  * transition and an animation on the same properties. The animation wins and
  * pins the element visible, breaking the entry.
  */
-export function Hero({ hero, site, ui }: HeroProps) {
+export function Hero({ hero, ui }: HeroProps) {
   return (
     <section className="hero" id="top">
       <div className="container hero-grid">
@@ -26,15 +26,16 @@ export function Hero({ hero, site, ui }: HeroProps) {
 
           <h1 className="hero-title hero-in hero-in-2">
             {hero.title_segments.map((segment, index) => (
-              <span key={index} className={segment.accent ? "accent" : undefined}>
-                {segment.text}
-              </span>
+              <Fragment key={index}>
+                {segment.break_before ? <br /> : null}
+                <span className={segment.accent ? "accent" : undefined}>
+                  {segment.text}
+                </span>
+              </Fragment>
             ))}
           </h1>
 
-          <p className="hero-description hero-in hero-in-3">{hero.description}</p>
-
-          <div className="hero-actions hero-in hero-in-4">
+          <div className="hero-actions hero-in hero-in-3">
             <a className="button primary" href={hero.primary_button.href}>
               <span>{hero.primary_button.label}</span>
               <span className="button-arrow" aria-hidden="true">
@@ -45,8 +46,6 @@ export function Hero({ hero, site, ui }: HeroProps) {
               {hero.secondary_button.label}
             </a>
           </div>
-
-          <p className="hero-note hero-in hero-in-5">{hero.note}</p>
         </div>
 
         <div className="hero-visual hero-in hero-in-3">
@@ -59,17 +58,8 @@ export function Hero({ hero, site, ui }: HeroProps) {
                 priority
               />
             </div>
-            <div className="portrait-caption">
-              <span>{site.name}</span>
-              <span>{site.location}</span>
-            </div>
           </HeroPortrait>
         </div>
-      </div>
-
-      <div className="scroll-note">
-        <span>{hero.scroll_note}</span>
-        <span className="scan" aria-hidden="true" />
       </div>
     </section>
   );

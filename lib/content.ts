@@ -5,7 +5,14 @@ import { parse } from "yaml";
 export type NavItem = { label: string; href: string };
 export type ImageRef = { src: string; alt: string };
 export type ButtonRef = { label: string; href: string };
-export type TitleSegment = { text: string; accent?: boolean };
+export type TitleSegment = {
+  text: string;
+  accent?: boolean;
+  /** Starts this segment on a new line of the headline. */
+  break_before?: boolean;
+};
+/** A social link. `icon` selects the glyph the footer draws for it. */
+export type SocialItem = NavItem & { icon: string };
 
 export type Article = {
   title: string;
@@ -31,21 +38,11 @@ export type Workshop = {
   language: string;
   sessions: number;
   capacity: number;
-  available_places: number;
-  price: { amount: number; currency: string };
   meta_display: string;
   dates_display: string;
   structure_display: string;
-  availability_display: string;
-  price_display: string;
   image: ImageRef;
   registration_url: string;
-};
-
-export type ExperienceItem = {
-  number: string;
-  title: string;
-  description: string;
 };
 
 export type Testimonial = {
@@ -63,7 +60,6 @@ export type SiteContent = {
     language: string;
     direction: "rtl" | "ltr";
     email: string;
-    location: string;
     url: string;
     /** Tiger mark alone — used where the full lockup would be illegible. */
     mark: ImageRef;
@@ -80,7 +76,6 @@ export type SiteContent = {
     menu_open_symbol: string;
     menu_close_symbol: string;
     arrow_symbol: string;
-    highlight_symbol: string;
     separator_symbol: string;
     brand_home_aria: string;
     image_pending_label: string;
@@ -91,22 +86,16 @@ export type SiteContent = {
   hero: {
     eyebrow: string;
     title_segments: TitleSegment[];
-    description: string;
-    note: string;
-    scroll_note: string;
     primary_button: ButtonRef;
     secondary_button: ButtonRef;
     portrait: ImageRef;
   };
   writing: {
-    eyebrow: string;
     title: string;
     introduction: string;
     scroller_aria: string;
     article_read_label: string;
     drag_hint: string;
-    all_writing_label: string;
-    all_writing_url: string;
     articles: Article[];
   };
   about: {
@@ -128,11 +117,9 @@ export type SiteContent = {
       time: string;
       location: string;
       structure: string;
-      availability: string;
     };
     items: Workshop[];
   };
-  experience: { eyebrow: string; title: string; items: ExperienceItem[] };
   testimonials: { eyebrow: string; title: string; items: Testimonial[] };
   newsletter: {
     eyebrow: string;
@@ -154,9 +141,15 @@ export type SiteContent = {
     email: string;
     form_action: string;
     mailto_fallback_note: string;
+    mailto_opened_message: string;
+    /** Must be one of `subjects`; selected when a workshop is reserved. */
+    reserve_subject: string;
+    /** `{workshop}` is replaced with the workshop's title. */
+    reserve_message: string;
     fields: {
       name: string;
       email: string;
+      phone: string;
       subject: string;
       message: string;
       submit: string;
@@ -166,9 +159,8 @@ export type SiteContent = {
     sending_label: string;
     subjects: string[];
   };
-  social: { items: NavItem[] };
+  social: { items: SocialItem[] };
   footer: {
-    sentence: string;
     copyright: string;
     photo_note: string;
     legal: NavItem[];
@@ -221,7 +213,6 @@ const REQUIRED_SECTIONS = [
   "writing",
   "about",
   "workshops",
-  "experience",
   "testimonials",
   "newsletter",
   "contact",

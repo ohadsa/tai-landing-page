@@ -13,7 +13,6 @@ export function Writing({ writing, ui }: WritingProps) {
     <section className="writing" id="writing" aria-labelledby="writing-title">
       <div className="container writing-head">
         <Reveal>
-          <p className="eyebrow">{writing.eyebrow}</p>
           <h2 className="section-title" id="writing-title">
             {writing.title}
           </h2>
@@ -56,12 +55,6 @@ export function Writing({ writing, ui }: WritingProps) {
 
       <div className="container writing-bottom">
         <span className="drag-hint">{writing.drag_hint}</span>
-        <a className="button" href={writing.all_writing_url}>
-          <span>{writing.all_writing_label}</span>
-          <span className="button-arrow" aria-hidden="true">
-            {ui.arrow_symbol}
-          </span>
-        </a>
       </div>
     </section>
   );

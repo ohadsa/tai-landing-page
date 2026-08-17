@@ -39,12 +39,7 @@ export function About({ about, ui }: AboutProps) {
           <Reveal>
             <ul className="highlights">
               {about.highlights.map((highlight) => (
-                <li key={highlight}>
-                  <span className="highlight-symbol" aria-hidden="true">
-                    {ui.highlight_symbol}
-                  </span>
-                  <span>{highlight}</span>
-                </li>
+                <li key={highlight}>{highlight}</li>
               ))}
             </ul>
           </Reveal>
