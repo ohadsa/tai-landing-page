@@ -16,9 +16,24 @@ import type { Lead } from "@/lib/lead";
 const TIMEOUT_MS = 6000;
 const ATTEMPTS = 2;
 
+/**
+ * Reads a setting, forgiving how it was pasted.
+ *
+ * A .env file is read by dotenv, which strips surrounding quotes. A hosting
+ * dashboard stores the value field literally, so the very same paste arrives
+ * still wrapped in them — and a secret containing quote characters is refused
+ * as unauthorized while a quoted URL fails to parse at all. Both break only in
+ * production, which is the worst place to discover a stray character.
+ */
+function setting(name: string): string | undefined {
+  const raw = process.env[name]?.trim();
+  if (!raw) return undefined;
+  return raw.replace(/^(["'])([\s\S]*)\1$/, "$2").trim() || undefined;
+}
+
 export async function appendLead(lead: Lead): Promise<boolean> {
-  const url = process.env.LEADS_SHEET_WEBHOOK_URL;
-  const secret = process.env.LEADS_SHEET_SECRET;
+  const url = setting("LEADS_SHEET_WEBHOOK_URL");
+  const secret = setting("LEADS_SHEET_SECRET");
 
   if (!url || !secret) {
     console.error(

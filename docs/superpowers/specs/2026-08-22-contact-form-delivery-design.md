@@ -51,7 +51,7 @@ row and sends the notification.
 submitContact(prev, formData)    app/actions/contact.ts      "use server"
       |  honeypot filled  -> silent ok, nothing recorded
       |  faster than 3s   -> silent ok, nothing recorded
-      |  >3 per IP/10min  -> rate_limit
+      |  >10 per IP/10min -> rate_limit
       |  invalid fields    -> validation
       v
 appendLead(lead)                 lib/leads-sheet.ts          secret, 6s timeout, 2 attempts
@@ -91,7 +91,9 @@ can never fail the request. The lead is durable before anything else is attempte
   `tabIndex={-1}` and `aria-hidden`. Not `type="hidden"`, which bots skip.
 - **Time-trap** — the client stamps elapsed milliseconds since mount; under 3000ms is a
   bot.
-- **Rate limit** — 3 submissions per IP per 10 minutes.
+- **Rate limit** — 10 submissions per IP per 10 minutes. Deliberately generous:
+  Israeli mobile carriers share one address across many subscribers, so a tight
+  budget refuses real visitors who submitted nothing.
 
 Honeypot and time-trap hits return **success** and record nothing, so a bot learns
 nothing about why it failed.

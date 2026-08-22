@@ -8,7 +8,7 @@ vi.mock("@/lib/leads-sheet", () => ({ appendLead: vi.fn() }));
 import { submitContact } from "@/app/actions/contact";
 import { initialContactState } from "@/lib/contact-state";
 import { appendLead } from "@/lib/leads-sheet";
-import { resetRateLimit } from "@/lib/rate-limit";
+import { LIMIT, resetRateLimit } from "@/lib/rate-limit";
 import { getContent } from "@/lib/content";
 
 const appendLeadMock = vi.mocked(appendLead);
@@ -111,8 +111,8 @@ describe("submitContact", () => {
     expect(result).toEqual({ status: "error", reason: "validation" });
   });
 
-  it("rate limits after three accepted submissions", async () => {
-    for (let i = 0; i < 3; i += 1) {
+  it("rate limits once the address has spent its budget", async () => {
+    for (let i = 0; i < LIMIT; i += 1) {
       expect(await submitContact(initialContactState, form())).toEqual({
         status: "success",
       });
@@ -121,13 +121,14 @@ describe("submitContact", () => {
       status: "error",
       reason: "rate_limit",
     });
-    expect(appendLeadMock).toHaveBeenCalledTimes(3);
+    // The refused one never reaches the sheet.
+    expect(appendLeadMock).toHaveBeenCalledTimes(LIMIT);
   });
 
   it("does not spend rate-limit budget on bot submissions", async () => {
     // A bot tripping the honeypot must not lock out the real visitor behind
     // the same NAT address.
-    for (let i = 0; i < 5; i += 1) {
+    for (let i = 0; i < LIMIT + 5; i += 1) {
       await submitContact(initialContactState, form({ company: "Acme" }));
     }
     expect(await submitContact(initialContactState, form())).toEqual({

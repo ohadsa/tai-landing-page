@@ -21,6 +21,14 @@ See `.env.example` for a local copy.
 | `LEADS_SHEET_WEBHOOK_URL` | Apps Script editor → **Deploy → Manage deployments** → the Web app URL, ending in `/exec` |
 | `LEADS_SHEET_SECRET` | Must equal `SECRET` in the deployed Apps Script exactly |
 
+Enter both **without surrounding quotes**. A `.env` file is parsed by dotenv,
+which strips them; the Vercel field stores exactly what you type, so a value
+pasted straight from `.env.example` keeps its quotes — the secret then contains
+quote characters and is refused as `unauthorized`, and the URL fails to parse.
+Because dotenv strips the quotes locally, this breaks in production only.
+`lib/leads-sheet.ts` strips stray quotes and whitespace defensively, but the
+value should still be clean.
+
 Environment variables are read at runtime, but an existing deployment will not
 pick up new ones. Redeploy after changing either.
 
@@ -49,7 +57,7 @@ under **Executions**.
 | --- | --- |
 | `success_message` | The row was written. Also shown to bots, deliberately — see below |
 | `validation_message` | A field failed server-side validation in `lib/lead.ts` |
-| `rate_limit_message` | More than 3 submissions from one address inside 10 minutes |
+| `rate_limit_message` | More than 10 submissions from one address inside 10 minutes |
 | `error_message` | The webhook failed twice. The lead was lost, and the visitor was told so |
 
 Honeypot and time-trap hits are answered with the success message and recorded

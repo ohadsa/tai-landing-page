@@ -8,7 +8,13 @@
  * spam ever arrives, this is the module to swap.
  */
 
-const LIMIT = 3;
+/**
+ * Deliberately generous. Israeli mobile carriers put many subscribers behind
+ * one address, so a tight budget can refuse a real visitor who has submitted
+ * nothing. The honeypot and the time-trap catch actual spam; this only caps
+ * how fast a script could burn through the Apps Script daily quota.
+ */
+export const LIMIT = 10;
 const WINDOW_MS = 10 * 60_000;
 /** Bounds memory if a flood arrives from many addresses. */
 const MAX_KEYS = 5000;
