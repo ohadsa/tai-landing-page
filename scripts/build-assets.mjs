@@ -7,6 +7,7 @@
  * build never depends on this script, but keeping it means the assets are
  * reproducible rather than mystery binaries.
  *
+ *
  * Uses sharp, which is already present as a Next.js dependency.
  */
 import sharp from "sharp";
@@ -124,8 +125,15 @@ for (const [src, out, position] of [
   ["assets/articles/condom.jpg", "public/images/articles/condom.jpg"],
   // The source is a 2.2:1 letterbox with the subject hard against the right
   // edge, and `attention` sliced his face in half. Anchor the crop instead.
-  ["assets/articles/who-lost.jpg", "public/images/articles/who-lost.jpg", "right"],
-  ["assets/articles/train-station.jpg", "public/images/articles/train-station.jpg"],
+  [
+    "assets/articles/who-lost.jpg",
+    "public/images/articles/who-lost.jpg",
+    "right",
+  ],
+  [
+    "assets/articles/train-station.jpg",
+    "public/images/articles/train-station.jpg",
+  ],
   ["assets/articles/humiliating.jpg", "public/images/articles/humiliating.jpg"],
   ["assets/articles/abortion.jpg", "public/images/articles/abortion.jpg"],
 ]) {
@@ -149,7 +157,10 @@ for (const [src, out] of [
     "assets/workshops/writing-the-unconscious.jpg",
     "public/images/workshops/writing-the-unconscious.jpg",
   ],
-  ["assets/workshops/writing-drama.jpg", "public/images/workshops/writing-drama.jpg"],
+  [
+    "assets/workshops/writing-drama.jpg",
+    "public/images/workshops/writing-drama.jpg",
+  ],
 ]) {
   await sharp(src)
     .resize(WORKSHOP_WIDTH, WORKSHOP_HEIGHT, {
