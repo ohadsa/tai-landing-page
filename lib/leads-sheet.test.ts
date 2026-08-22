@@ -41,8 +41,54 @@ describe("appendLead", () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("https://script.google.com/macros/s/test/exec");
     expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body)).toEqual({ secret: "test-secret", ...LEAD });
+    expect(JSON.parse(init.body)).toEqual({
+      secret: "test-secret",
+      ...LEAD,
+      // Sheets would otherwise parse the number; see asSheetText.
+      phone: `'${LEAD.phone}`,
+    });
     expect(init.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("marks the phone as text so Sheets does not parse it", async () => {
+    // A leading + makes Sheets attempt a formula and show an error; a leading
+    // 0 makes it parse a number and drop the zero. The apostrophe is Sheets'
+    // own "this is text" prefix, and it is stripped on the way into the cell,
+    // so the column still reads +972526186160.
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    for (const [typed, sent] of [
+      ["+972526186160", "'+972526186160"],
+      ["0501234567", "'0501234567"],
+      ["050-123-4567", "'050-123-4567"],
+    ]) {
+      fetchMock.mockClear();
+      await appendLead({ ...LEAD, phone: typed });
+      expect(JSON.parse(fetchMock.mock.calls[0][1].body).phone).toBe(sent);
+    }
+  });
+
+  it("prefixes only the phone, leaving every other field untouched", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await appendLead(LEAD);
+    const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(sent.name).toBe(LEAD.name);
+    expect(sent.email).toBe(LEAD.email);
+    expect(sent.subject).toBe(LEAD.subject);
+    expect(sent.message).toBe(LEAD.message);
+  });
+
+  it("does not mutate the lead it was given", async () => {
+    // The visitor's own value must survive intact; the apostrophe belongs to
+    // the wire format, not to the lead.
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ ok: true })));
+    const lead = { ...LEAD, phone: "+972526186160" };
+
+    await appendLead(lead);
+    expect(lead.phone).toBe("+972526186160");
   });
 
   it("retries once and succeeds when the first attempt throws", async () => {

@@ -31,6 +31,23 @@ function setting(name: string): string | undefined {
   return raw.replace(/^(["'])([\s\S]*)\1$/, "$2").trim() || undefined;
 }
 
+/**
+ * Marks a value so Google Sheets stores it verbatim.
+ *
+ * Sheets parses whatever lands in a cell. `+972526186160` is read as a formula
+ * and shows an error, and `0501234567` is read as a number and loses its
+ * leading zero — so both of the shapes an Israeli visitor actually types are
+ * corrupted. A leading apostrophe is Sheets' own "treat this as text" prefix:
+ * it is consumed on the way into the cell, so the column still reads
+ * +972526186160 and the visitor never sees it.
+ *
+ * Applied here, on the wire, rather than to the lead itself — the phone number
+ * the visitor typed stays exactly as they typed it.
+ */
+function asSheetText(value: string): string {
+  return `'${value}`;
+}
+
 export async function appendLead(lead: Lead): Promise<boolean> {
   const url = setting("LEADS_SHEET_WEBHOOK_URL");
   const secret = setting("LEADS_SHEET_SECRET");
@@ -47,7 +64,11 @@ export async function appendLead(lead: Lead): Promise<boolean> {
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ secret, ...lead }),
+        body: JSON.stringify({
+          secret,
+          ...lead,
+          phone: asSheetText(lead.phone),
+        }),
         // Apps Script can be slow to wake. Long enough to survive a cold start,
         // short enough that the visitor is not left watching a spinner.
         signal: AbortSignal.timeout(TIMEOUT_MS),
