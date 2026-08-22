@@ -84,6 +84,18 @@ writing:
   scroller_aria: "טקסטים נבחרים, ניתן לגרור לצדדים"
   article_read_label: "לקריאת הטקסט"
   articles:
+    - title: "עד שהם יכלו אותנו"
+      description: "על אח שחזר בתשובה, על הגבול שבין סובלנות להצטמצמות ועל המחיר שמשלמים עליו."
+      publication: "מילי'ס"
+      published_at: "2026-08-16"
+      category: "מילי'ס"
+      meta_display: "מילי'ס · 5 דקות קריאה"
+      published_label: "16 באוגוסט 2026"
+      image:
+        src: "/images/articles/consumed.jpg"
+        alt: "גבר חרדי יושב לצד קצין צה\"ל במדים באולם מליאת הכנסת"
+      url: "https://www.mymillies.com/post/%D7%A2%D7%93-%D7%A9%D7%94%D7%9D-%D7%99%D7%9B%D7%9C%D7%95-%D7%90%D7%95%D7%AA%D7%A0%D7%95"
+
     - title: "גזלייטינג וגוסטינג תודה שנולדתם"
       description: "על שלוש אחיות מדור אחר, על ג׳ן זי ועל הפער שנפער בין הדורות."
       publication: "מילי'ס"

@@ -121,6 +121,14 @@ const CARD_WIDTH = 900;
 const CARD_HEIGHT = Math.round(CARD_WIDTH / 1.18);
 
 for (const [src, out, position] of [
+  // The photo is a pair — a haredi man beside an officer — and `attention`
+  // locked onto the officer, pushing the other man against the frame edge.
+  // A centred crop takes the same sliver off each side and keeps both.
+  [
+    "assets/articles/consumed.png",
+    "public/images/articles/consumed.jpg",
+    "centre",
+  ],
   ["assets/articles/gaslighting.jpg", "public/images/articles/gaslighting.jpg"],
   ["assets/articles/condom.jpg", "public/images/articles/condom.jpg"],
   // The source is a 2.2:1 letterbox with the subject hard against the right
@@ -178,6 +186,7 @@ for (const file of [
   "public/images/social-card.jpg",
   "public/images/hero-portrait.jpg",
   "public/images/about-portrait.jpg",
+  "public/images/articles/consumed.jpg",
   "public/images/articles/gaslighting.jpg",
   "public/images/articles/condom.jpg",
   "public/images/articles/who-lost.jpg",
