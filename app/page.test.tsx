@@ -95,17 +95,12 @@ describe("page renders from content/site.yaml", () => {
     ).toBeNull();
   });
 
-  it("posts the contact form to a real endpoint, with no mailto notice", () => {
-    // A configured endpoint means the form submits in place. The mailto notice
-    // is only for the unconfigured fallback and must not appear here.
-    expect(isConfiguredEndpoint(content.contact.form_action)).toBe(true);
-    render(<Home />);
+  it("offers a submit button and a honeypot the visitor cannot reach", () => {
+    const { container } = render(<Home />);
     expect(
       screen.getByRole("button", { name: content.contact.fields.submit }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText(content.contact.mailto_fallback_note),
-    ).toBeNull();
+    expect(container.querySelector('input[name="company"]')).not.toBeNull();
   });
 
   it("collects every lead field the form promises", () => {

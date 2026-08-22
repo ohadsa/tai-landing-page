@@ -179,9 +179,6 @@ export type SiteContent = {
     title: string;
     description: string;
     email: string;
-    form_action: string;
-    mailto_fallback_note: string;
-    mailto_opened_message: string;
     /** Must be one of `subjects`; selected when a workshop is reserved. */
     reserve_subject: string;
     /** `{workshop}` is replaced with the workshop's title. */
@@ -196,6 +193,8 @@ export type SiteContent = {
     };
     success_message: string;
     error_message: string;
+    validation_message: string;
+    rate_limit_message: string;
     sending_label: string;
     subjects: string[];
   };

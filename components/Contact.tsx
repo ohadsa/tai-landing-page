@@ -1,27 +1,56 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { SiteContent } from "@/lib/content";
-import { isConfiguredEndpoint, mailto, wasAccepted } from "@/lib/forms";
+import { mailto } from "@/lib/forms";
+import { submitContact } from "@/app/actions/contact";
+import {
+  initialContactState,
+  type ContactState,
+} from "@/lib/contact-state";
 import { RESERVE_EVENT, type ReserveDetail } from "@/components/ReserveButton";
 
-type Status = "idle" | "sending" | "success" | "error" | "handed-off";
-
 /**
- * Posts to the configured endpoint when there is one.
+ * Submits through a Server Action, which records the lead in the owner's sheet.
  *
- * With no endpoint the form does not pretend to send: submitting opens the
- * visitor's mail client with the message pre-filled, and a note above the
- * button says so beforehand. Either way the message reaches a person.
+ * What it replaced posted from the browser to a third-party relay and read an
+ * opaque redirect as proof of delivery — so it said "נשלחה" on every submission
+ * whether or not anything arrived. Every state below reflects what the server
+ * actually did.
  */
 export function Contact({ contact }: { contact: SiteContent["contact"] }) {
-  const action = contact.form_action?.trim();
-  const canPost = isConfiguredEndpoint(action);
-  const [status, setStatus] = useState<Status>("idle");
-  // Subject and message are controlled so a workshop's שמירת מקום button can
-  // fill them in before the visitor arrives at the form.
+  const formRef = useRef<HTMLFormElement>(null);
+  // Zero until the effect below runs, which reads as a very old mount and so
+  // passes the time-trap. Never the direction that drops a real lead.
+  const mountedAt = useRef(0);
+  // Controlled so a workshop's שמירת מקום button can fill them in before the
+  // visitor reaches the form.
   const [subject, setSubject] = useState(contact.subjects[0]);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
+
+  const [state, formAction, pending] = useActionState<ContactState, FormData>(
+    async (previous, data) => {
+      // Measured on the client. Comparing the visitor's clock to the server's
+      // would drop real leads whenever the two disagree.
+      data.set("elapsed", String(Date.now() - mountedAt.current));
+
+      const result = await submitContact(previous, data);
+      if (result.status === "success") {
+        // Cleared here rather than in an effect on `state`: setState inside an
+        // effect body costs a second render pass for nothing. reset() clears
+        // the uncontrolled fields; the controlled two need saying.
+        formRef.current?.reset();
+        setSubject(contact.subjects[0]);
+        setMessage("");
+      }
+      return result;
+    },
+    initialContactState,
+  );
 
   useEffect(() => {
     function onReserve(event: Event) {
@@ -33,62 +62,22 @@ export function Contact({ contact }: { contact: SiteContent["contact"] }) {
         setSubject(contact.reserve_subject);
       }
       setMessage(contact.reserve_message.replace("{workshop}", workshop));
-      setStatus("idle");
     }
 
     window.addEventListener(RESERVE_EVENT, onReserve);
     return () => window.removeEventListener(RESERVE_EVENT, onReserve);
   }, [contact]);
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = new FormData(form);
-
-    if (!canPost) {
-      const body = [
-        `${contact.fields.name}: ${data.get("name") ?? ""}`,
-        `${contact.fields.email}: ${data.get("email") ?? ""}`,
-        `${contact.fields.phone}: ${data.get("phone") ?? ""}`,
-        "",
-        String(data.get("message") ?? ""),
-      ].join("\n");
-      window.location.href = mailto(contact.email, subject, body);
-      // Say so either way. If no mail client is registered the browser ignores
-      // the mailto entirely, and without this the button would look broken.
-      setStatus("handed-off");
-      return;
-    }
-
-    setStatus("sending");
-    try {
-      const response = await fetch(action as string, {
-        method: "POST",
-        headers: { Accept: "application/json" },
-        body: data,
-        // Never follow the relay's success redirect: see wasAccepted.
-        redirect: "manual",
-      });
-      if (!(await wasAccepted(response))) {
-        throw new Error("the endpoint did not accept the submission");
-      }
-      form.reset();
-      setSubject(contact.subjects[0]);
-      setMessage("");
-      setStatus("success");
-    } catch {
-      setStatus("error");
-    }
-  }
-
-  const message_text =
-    status === "success"
+  const statusMessage =
+    state.status === "success"
       ? contact.success_message
-      : status === "error"
-        ? contact.error_message
-        : status === "handed-off"
-          ? contact.mailto_opened_message
-          : "";
+      : state.status === "error"
+        ? state.reason === "validation"
+          ? contact.validation_message
+          : state.reason === "rate_limit"
+            ? contact.rate_limit_message
+            : contact.error_message
+        : "";
 
   return (
     <section className="contact" id="contact" aria-labelledby="contact-title">
@@ -104,7 +93,7 @@ export function Contact({ contact }: { contact: SiteContent["contact"] }) {
           </a>
         </div>
 
-        <form className="contact-form" onSubmit={onSubmit}>
+        <form className="contact-form" ref={formRef} action={formAction}>
           <div className="field">
             <label htmlFor="contact-name">{contact.fields.name}</label>
             <input id="contact-name" name="name" autoComplete="name" required />
@@ -160,20 +149,33 @@ export function Contact({ contact }: { contact: SiteContent["contact"] }) {
             />
           </div>
 
-          {!canPost ? (
-            <p className="contact-fallback-note">{contact.mailto_fallback_note}</p>
-          ) : null}
+          {/*
+            The honeypot. A real input rather than type="hidden", which bots
+            skip, positioned off-screen rather than display:none, which they
+            also skip. Hidden from assistive tech and out of the tab order, so
+            no visitor can reach it; anything that fills it is a script.
+          */}
+          <div className="honeypot" aria-hidden="true">
+            <label htmlFor="contact-company">Company</label>
+            <input
+              id="contact-company"
+              name="company"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
 
           <button
             className="button contact-submit"
             type="submit"
-            disabled={status === "sending"}
+            disabled={pending}
           >
-            {status === "sending" ? contact.sending_label : contact.fields.submit}
+            {pending ? contact.sending_label : contact.fields.submit}
           </button>
 
           <p className="form-message" aria-live="polite">
-            {message_text}
+            {statusMessage}
           </p>
         </form>
       </div>

@@ -1014,11 +1014,13 @@ blockquote,
   color: var(--orange);
   font-size: 13px;
 }
-.contact-fallback-note {
-  grid-column: 1 / -1;
-  margin: 0;
-  color: var(--muted);
-  font-size: 12px;
+/* Off-screen rather than display:none, which spam bots skip. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 /* Footer -------------------------------------------------------------- */
