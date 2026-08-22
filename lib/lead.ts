@@ -1,9 +1,12 @@
 /**
  * Shape and validation of a contact-form submission.
  *
- * Server-side validation is the only validation that counts. The `required` and
- * `type="email"` attributes on the form are a courtesy to the visitor; anything
- * posting straight at the Server Action ignores them entirely.
+ * The only rule is that a field was filled in. Nothing here judges whether a
+ * message is long enough or a phone number looks the way we expect: a real
+ * visitor who writes "בדיקה" or types a number in an unanticipated shape must
+ * reach the inbox. Refusing a lead over a format guess loses exactly what this
+ * form exists to capture, so the bounds below are only wide enough to stop a
+ * script posting something absurd.
  */
 
 export type Lead = {
@@ -14,30 +17,21 @@ export type Lead = {
   message: string;
 };
 
-// Deliberately permissive. A stricter pattern rejects valid addresses far more
-// often than it catches bad ones, and an address is proven by whether the reply
-// arrives, not by a regex.
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-// Israeli numbers as visitors actually type them: 0501234567, 050-123-4567,
-// +972 50 123 4567, (050) 1234567.
-const PHONE = /^\+?[\d\s()-]{9,20}$/;
+/** Generous ceilings, present to bound abuse rather than to police input. */
+const MAX_LENGTH: Record<keyof Lead, number> = {
+  name: 200,
+  email: 320, // the maximum length of an email address per RFC 3696
+  phone: 50,
+  subject: 200,
+  message: 10_000,
+};
 
 function field(value: FormDataEntryValue | null): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-/**
- * Returns the lead, or `null` if any field is unusable.
- *
- * A single null rather than per-field errors: the form's own HTML validation
- * catches every realistic human mistake first, so reaching here means either a
- * script or a browser we cannot help specifically.
- */
-export function parseLead(
-  data: FormData,
-  subjects: readonly string[],
-): Lead | null {
+/** Returns the lead, or `null` if a field is empty or absurdly long. */
+export function parseLead(data: FormData): Lead | null {
   const lead: Lead = {
     name: field(data.get("name")),
     email: field(data.get("email")),
@@ -46,15 +40,10 @@ export function parseLead(
     message: field(data.get("message")),
   };
 
-  const valid =
-    lead.name.length >= 2 &&
-    lead.name.length <= 100 &&
-    lead.email.length <= 254 &&
-    EMAIL.test(lead.email) &&
-    PHONE.test(lead.phone) &&
-    subjects.includes(lead.subject) &&
-    lead.message.length >= 10 &&
-    lead.message.length <= 5000;
+  for (const [key, value] of Object.entries(lead) as [keyof Lead, string][]) {
+    if (value.length === 0) return null;
+    if (value.length > MAX_LENGTH[key]) return null;
+  }
 
-  return valid ? lead : null;
+  return lead;
 }

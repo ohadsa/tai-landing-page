@@ -287,9 +287,9 @@ contact:
     submit: "שליחת הודעה"
   success_message: "תודה. ההודעה נשלחה ואחזור אלייך בהקדם."
   error_message: "ההודעה לא נשלחה. אפשר לנסות שוב או לכתוב ישירות למייל שלמעלה."
-  # Shown when the server rejects the submitted fields. The form's own HTML
-  # validation catches this first for anyone using a browser normally.
-  validation_message: "משהו בפרטים לא תקין. אפשר לבדוק ולנסות שוב."
+  # Shown when a field arrived empty. The form's own HTML validation catches
+  # this first for anyone using a browser normally, so it is rarely seen.
+  validation_message: "צריך למלא את כל השדות. אפשר להשלים ולנסות שוב."
   # Shown after several submissions in quick succession from the same address.
   rate_limit_message: "נשלחו כמה הודעות ברצף. אפשר לנסות שוב בעוד כמה דקות."
   sending_label: "שולח…"

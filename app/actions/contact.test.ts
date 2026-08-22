@@ -9,10 +9,9 @@ import { submitContact } from "@/app/actions/contact";
 import { initialContactState } from "@/lib/contact-state";
 import { appendLead } from "@/lib/leads-sheet";
 import { LIMIT, resetRateLimit } from "@/lib/rate-limit";
-import { getContent } from "@/lib/content";
 
 const appendLeadMock = vi.mocked(appendLead);
-const SUBJECT = getContent().contact.subjects[0];
+const SUBJECT = "שאלה על סדנה";
 
 function form(overrides: Record<string, string> = {}): FormData {
   const data = new FormData();
@@ -93,22 +92,23 @@ describe("submitContact", () => {
     expect(appendLeadMock).toHaveBeenCalledTimes(1);
   });
 
-  it("reports a validation error and records nothing", async () => {
+  it("asks the visitor to fill an empty field, and records nothing", async () => {
     const result = await submitContact(
       initialContactState,
-      form({ email: "nope" }),
+      form({ message: "" }),
     );
 
     expect(result).toEqual({ status: "error", reason: "validation" });
     expect(appendLeadMock).not.toHaveBeenCalled();
   });
 
-  it("rejects a subject the form never offered", async () => {
-    const result = await submitContact(
-      initialContactState,
-      form({ subject: "anything" }),
-    );
-    expect(result).toEqual({ status: "error", reason: "validation" });
+  it("records a short message rather than judging it", async () => {
+    // The rule is "filled in", not "long enough". A visitor writing one word
+    // is a lead like any other.
+    expect(
+      await submitContact(initialContactState, form({ message: "בדיקה" })),
+    ).toEqual({ status: "success" });
+    expect(appendLeadMock).toHaveBeenCalledTimes(1);
   });
 
   it("rate limits once the address has spent its budget", async () => {

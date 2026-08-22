@@ -1,7 +1,6 @@
 "use server";
 
 import { headers } from "next/headers";
-import { getContent } from "@/lib/content";
 import { parseLead } from "@/lib/lead";
 import { appendLead } from "@/lib/leads-sheet";
 import { allow } from "@/lib/rate-limit";
@@ -36,7 +35,7 @@ export async function submitContact(
     return { status: "error", reason: "rate_limit" };
   }
 
-  const lead = parseLead(data, getContent().contact.subjects);
+  const lead = parseLead(data);
   if (!lead) {
     return { status: "error", reason: "validation" };
   }
