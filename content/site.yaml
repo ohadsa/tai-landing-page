@@ -262,24 +262,6 @@ contact:
   title: "בואו נדבר."
   description: "אני פנויה לענות לכל שאלה, הצעה או מחשבה שבא לכם לשתף."
   email: "tai.atar22@gmail.com"
-  # Where submissions go. This is FormSubmit's alias for tai.atar22@gmail.com,
-  # issued once the address was confirmed. Use the alias rather than the
-  # /ajax/<address> form: the alias keeps the inbox out of the page source, and
-  # the two are separate forms to FormSubmit — only the alias is activated.
-  #
-  # The alias has no JSON variant, so it answers a successful POST with a 302
-  # back to the page rather than a JSON body. That is why the submit fetch uses
-  # redirect: "manual" — see wasAccepted in lib/forms.ts.
-  #
-  # To move to another provider (Formspree, your own endpoint) just replace this
-  # URL. Empty it and the form falls back to the visitor's mail client rather
-  # than silently discarding messages.
-  # form_action: "https://formsubmit.co/el/jotama"
-  form_action: "https://formsubmit.co/el/juzanu"
-  mailto_fallback_note: "הטופס ייפתח בתוכנת הדואר שלך."
-  # Shown after the mail client is handed the message. Without it the button
-  # looks broken on any device with no mail app registered.
-  mailto_opened_message: "פתחנו את תוכנת הדואר שלך עם ההודעה מוכנה לשליחה. אם לא נפתח כלום, אפשר לכתוב ישירות לכתובת שלמעלה."
   # Used when a visitor presses שמירת מקום on a workshop card. The subject must
   # be one of the subjects listed below, and {workshop} becomes its title.
   reserve_subject: "הרשמה לסדנה"
@@ -293,6 +275,11 @@ contact:
     submit: "שליחת הודעה"
   success_message: "תודה. ההודעה נשלחה ואחזור אלייך בהקדם."
   error_message: "ההודעה לא נשלחה. אפשר לנסות שוב או לכתוב ישירות למייל שלמעלה."
+  # Shown when the server rejects the submitted fields. The form's own HTML
+  # validation catches this first for anyone using a browser normally.
+  validation_message: "משהו בפרטים לא תקין. אפשר לבדוק ולנסות שוב."
+  # Shown after several submissions in quick succession from the same address.
+  rate_limit_message: "נשלחו כמה הודעות ברצף. אפשר לנסות שוב בעוד כמה דקות."
   sending_label: "שולח…"
   subjects:
     - "שאלה על סדנה"
@@ -346,7 +333,7 @@ legal:
     title: "Privacy Policy"
     # Browser tab and search snippet only; never rendered in the body.
     description: "What the TAI ATAR website collects, how it is used, and how to ask to see or delete it."
-    updated_label: "Last updated: 17 August 2026"
+    updated_label: "Last updated: 22 August 2026"
     intro: "This is a simple content website. There is no registration, there are no accounts, and there is no tracking. The only details that reach me are the ones you choose to type into the contact form. This page explains exactly what happens to them."
     sections:
       - heading: "What is collected"
@@ -357,11 +344,11 @@ legal:
         body:
           - "To reply to you and continue the conversation, and for nothing else."
           - "Your details are never sold, never passed to advertisers, and never added to a mailing list. There is no active mailing list on this site."
-      - heading: "The service that delivers the form"
+      - heading: "Where the form goes"
         body:
-          - "Sending the form routes it through FormSubmit, a service based in the United States that forwards web forms to an email inbox. The details you typed therefore pass through their servers on the way to my mailbox, including outside Israel."
-          - "FormSubmit publishes its own privacy policy at https://formsubmit.co/privacy. Their handling of that data is governed by their policy and their terms, not by this page."
-          - "The message itself arrives in a Gmail mailbox that I control."
+          - "Sending the form passes what you typed to Google, and to no one else. The details are recorded as a row in a Google Sheets spreadsheet that only I can open, and a copy is emailed to a Gmail mailbox that I control."
+          - "That means your details are stored and processed on Google's servers, including servers outside Israel. Google's handling of that data is governed by its own privacy policy at https://policies.google.com/privacy, not by this page."
+          - "When you submit the form your IP address is held in the website server's memory for a few minutes, to limit how many messages can be sent in quick succession. It is not written to the spreadsheet, not stored alongside your message, and not used to identify you."
       - heading: "Website hosting"
         body:
           - "This site is hosted by Vercel. Like any web server, it records technical details of each request in its logs — IP address, browser type, and the time of the request. These are held by the hosting provider under its own terms, and are not used by me to identify visitors."
@@ -376,7 +363,7 @@ legal:
           - "I have no control over what those sites collect or how they use it, and this policy does not extend to them."
       - heading: "How long messages are kept"
         body:
-          - "Messages stay in my mailbox for as long as the conversation remains relevant. You may ask me at any time to delete a message, and I will delete it."
+          - "Messages stay in my mailbox, and in the spreadsheet the form writes to, for as long as the conversation remains relevant. You may ask me at any time to delete a message, and I will delete it from both."
       - heading: "Your rights"
         body:
           - "Under the Israeli Protection of Privacy Law, 5741-1981, you have the right to review information held about you, to ask that it be corrected if it is wrong, and to ask that it be deleted."

@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getContent } from "@/lib/content";
-import {
-  isConfiguredEndpoint,
-  mailto,
-  rejectedDespiteOk,
-  wasAccepted,
-} from "@/lib/forms";
+import { isConfiguredEndpoint, mailto } from "@/lib/forms";
 
 describe("getContent", () => {
   it("parses every top-level section the page composes", () => {
@@ -120,80 +115,6 @@ describe("isConfiguredEndpoint", () => {
 
   it("accepts a real endpoint", () => {
     expect(isConfiguredEndpoint("https://formspree.io/f/abcdwxyz")).toBe(true);
-  });
-});
-
-describe("rejectedDespiteOk", () => {
-  const json = (body: unknown) =>
-    new Response(JSON.stringify(body), {
-      status: 200,
-      headers: { "content-type": "application/json" },
-    });
-
-  it('catches FormSubmit\'s 200 with {"success":"false"}', async () => {
-    // Returned until the form is activated. Trusting the status code would
-    // thank the visitor for a message that reached no one.
-    expect(
-      await rejectedDespiteOk(
-        json({ success: "false", message: "This form needs Activation." }),
-      ),
-    ).toBe(true);
-  });
-
-  it("catches a Formspree validation failure", async () => {
-    expect(await rejectedDespiteOk(json({ ok: false }))).toBe(true);
-    expect(
-      await rejectedDespiteOk(json({ errors: [{ message: "bad email" }] })),
-    ).toBe(true);
-  });
-
-  it("passes a genuine success through", async () => {
-    expect(await rejectedDespiteOk(json({ success: "true" }))).toBe(false);
-    expect(await rejectedDespiteOk(json({ ok: true }))).toBe(false);
-    expect(await rejectedDespiteOk(json({ errors: [] }))).toBe(false);
-  });
-
-  it("treats an unrecognised body as success", async () => {
-    // Never report a working endpoint as broken just because its reply is an
-    // empty body or a shape we have not seen.
-    expect(await rejectedDespiteOk(new Response("", { status: 200 }))).toBe(false);
-    expect(await rejectedDespiteOk(new Response("OK", { status: 200 }))).toBe(false);
-  });
-
-  it("leaves the body readable for any later consumer", async () => {
-    const response = json({ success: "true" });
-    await rejectedDespiteOk(response);
-    await expect(response.json()).resolves.toEqual({ success: "true" });
-  });
-});
-
-describe("wasAccepted", () => {
-  const json = (body: unknown, status = 200) =>
-    new Response(JSON.stringify(body), {
-      status,
-      headers: { "content-type": "application/json" },
-    });
-
-  it("accepts an unfollowed redirect", async () => {
-    // FormSubmit's alias endpoint answers success with a 302. Following it
-    // fails CORS, so the fetch uses redirect: "manual" and this opaque
-    // response — whose only readable field is its type — is the acceptance.
-    const opaque = Response.error();
-    Object.defineProperty(opaque, "type", { value: "opaqueredirect" });
-    expect(await wasAccepted(opaque)).toBe(true);
-  });
-
-  it("rejects a 200 whose body reports failure", async () => {
-    expect(await wasAccepted(json({ success: "false" }))).toBe(false);
-  });
-
-  it("rejects a genuine error status", async () => {
-    expect(await wasAccepted(json({ error: "nope" }, 500))).toBe(false);
-  });
-
-  it("accepts a plain success", async () => {
-    expect(await wasAccepted(json({ success: "true" }))).toBe(true);
-    expect(await wasAccepted(new Response("", { status: 200 }))).toBe(true);
   });
 });
 
